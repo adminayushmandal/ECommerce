@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/AppHost/">
+    <Project Path="ECommerce.AppHost/ECommerce.AppHost.csproj" />
+    <Project Path="ECommerce.ServiceDefaults/ECommerce.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/WebApp/">
+    <Project Path="Application/Application.csproj" Id="b52aa4c8-6a7e-4c98-ae42-c80ef0958ea4" />
+    <Project Path="ECommerce.Server/ECommerce.Server.csproj" />
+  </Folder>
+</Solution>
