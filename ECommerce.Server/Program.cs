@@ -1,12 +1,12 @@
-using ECommerce.Server.Infrastructure;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+var connectionString = builder.Configuration.GetConnectionString("EcommerceDb")
+    ?? throw new ApplicationException("No connection string found for 'EcommerceDb'.");
+
+builder.AddInfrastructure(connectionString);
+builder.AddWebServices();
 
 var app = builder.Build();
 
