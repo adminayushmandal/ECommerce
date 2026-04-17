@@ -26,6 +26,10 @@ internal sealed class ProductVariantConfiguration : IEntityTypeConfiguration<Pro
         builder.Property(x => x.AttributeSummary)
             .HasMaxLength(500);
 
+        builder.Property(x => x.ImageUrl)
+            .HasMaxLength(2048)
+            .IsRequired();
+
         builder.Property(x => x.PriceOverride)
             .HasPrecision(18, 2);
 

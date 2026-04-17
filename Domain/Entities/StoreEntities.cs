@@ -43,6 +43,35 @@ public sealed class Store : BaseAuditableEntity
         Latitude = latitude;
         Longitude = longitude;
     }
+
+    public void UpdateDetails(
+        string code,
+        string name,
+        string addressLine1,
+        string city,
+        string state,
+        string country,
+        string postalCode,
+        double latitude,
+        double longitude,
+        string? addressLine2 = null)
+    {
+        Code = code;
+        Name = name;
+        AddressLine1 = addressLine1;
+        AddressLine2 = addressLine2;
+        City = city;
+        State = state;
+        Country = country;
+        PostalCode = postalCode;
+        Latitude = latitude;
+        Longitude = longitude;
+    }
+
+    public void SetActive(bool isActive)
+    {
+        IsActive = isActive;
+    }
 }
 
 public sealed class InventoryItem : BaseAuditableEntity
@@ -68,6 +97,31 @@ public sealed class InventoryItem : BaseAuditableEntity
         ProductId = productId;
         ProductVariantId = productVariantId;
         QuantityOnHand = quantityOnHand;
+        ReorderThreshold = reorderThreshold;
+    }
+
+    public void AdjustStock(int quantityOnHand)
+    {
+        if (quantityOnHand < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantityOnHand), quantityOnHand, "Quantity on hand cannot be negative.");
+        }
+
+        if (ReservedQuantity > quantityOnHand)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantityOnHand), quantityOnHand, "Quantity on hand cannot be less than the reserved quantity.");
+        }
+
+        QuantityOnHand = quantityOnHand;
+    }
+
+    public void SetReorderThreshold(int reorderThreshold)
+    {
+        if (reorderThreshold < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(reorderThreshold), reorderThreshold, "Reorder threshold cannot be negative.");
+        }
+
         ReorderThreshold = reorderThreshold;
     }
 

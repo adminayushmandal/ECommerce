@@ -23,6 +23,10 @@ internal sealed class CategoryConfiguration : IEntityTypeConfiguration<Category>
             .HasMaxLength(1000)
             .IsRequired();
 
+        builder.Property(x => x.ImageUrl)
+            .HasMaxLength(2048)
+            .IsRequired();
+
         builder.Property(x => x.IsActive)
             .HasDefaultValue(true);
 

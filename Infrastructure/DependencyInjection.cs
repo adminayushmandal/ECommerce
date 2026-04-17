@@ -1,4 +1,7 @@
-﻿using Domain.Entities;
+using Application.Common.Interfaces;
+using Domain.Entities;
+using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,11 +21,23 @@ namespace Infrastructure
                 options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
+            builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+            builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>();
+            builder.Services.AddScoped<IStoreRepository, StoreRepository>();
+            builder.Services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IIdentityService, IdentityService>();
+
             builder.Services.AddIdentityApiEndpoints<User>()
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            builder.Services.AddAuthorizationBuilder();
+
             builder.Services.AddSingleton(TimeProvider.System);
+            builder.Services.AddScoped<DatabaseSeedingService>();
         }
     }
 }

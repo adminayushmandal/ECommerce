@@ -14,10 +14,12 @@ public class User : IdentityUser, IDatetimeAudit
 
     public User()
     {
+        Id = Guid.NewGuid().ToString("N");
     }
 
     public User(string displayName, string userName)
     {
+        Id = Guid.NewGuid().ToString("N");
         DisplayName = displayName;
         UserName = userName;
         Email = userName;

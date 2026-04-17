@@ -33,12 +33,72 @@ public sealed class Order : BaseAuditableEntity
         Status = OrderStatus.Allocated;
     }
 
+    public void SetCustomerLocation(double customerLatitude, double customerLongitude)
+    {
+        CustomerLatitude = customerLatitude;
+        CustomerLongitude = customerLongitude;
+    }
+
+    public void SetCustomerEmail(string customerEmail)
+    {
+        CustomerEmail = customerEmail;
+    }
+
     public void AddItem(Product product, ProductVariant? variant, int quantity)
     {
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantity), quantity, "Order item quantity must be greater than zero.");
+        }
+
         var unitPrice = variant?.PriceOverride ?? product.BasePrice;
         var item = new OrderItem(Id, product.Id, variant?.Id, product.Name, variant?.Name, quantity, unitPrice);
         Items.Add(item);
         TotalAmount += item.LineTotal;
+    }
+
+    public void UpdateItemQuantity(string orderItemId, int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantity), quantity, "Order item quantity must be greater than zero.");
+        }
+
+        var item = Items.FirstOrDefault(orderItem => orderItem.Id == orderItemId)
+            ?? throw new InvalidOperationException($"Order item '{orderItemId}' was not found.");
+
+        TotalAmount -= item.LineTotal;
+        item.UpdateQuantity(quantity);
+        TotalAmount += item.LineTotal;
+    }
+
+    public void RemoveItem(string orderItemId)
+    {
+        var item = Items.FirstOrDefault(orderItem => orderItem.Id == orderItemId)
+            ?? throw new InvalidOperationException($"Order item '{orderItemId}' was not found.");
+
+        Items.Remove(item);
+        TotalAmount -= item.LineTotal;
+    }
+
+    public void Cancel()
+    {
+        if (Status == OrderStatus.Delivered)
+        {
+            throw new InvalidOperationException("Delivered orders cannot be cancelled.");
+        }
+
+        Status = OrderStatus.Cancelled;
+    }
+
+    public void Checkout(string storeId)
+    {
+        if (Items.Count == 0)
+        {
+            throw new InvalidOperationException("Cannot checkout an empty cart.");
+        }
+
+        AllocateToStore(storeId);
     }
 }
 
@@ -74,5 +134,15 @@ public sealed class OrderItem : BaseAuditableEntity
         VariantName = variantName;
         Quantity = quantity;
         UnitPrice = unitPrice;
+    }
+
+    public void UpdateQuantity(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(quantity), quantity, "Order item quantity must be greater than zero.");
+        }
+
+        Quantity = quantity;
     }
 }
