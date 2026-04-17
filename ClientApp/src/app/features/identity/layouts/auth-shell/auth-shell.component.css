@@ -1,0 +1,213 @@
+:host {
+  display: block;
+}
+
+.identity-screen {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at top left, rgba(13, 148, 136, 0.14), transparent 26%),
+    radial-gradient(circle at bottom right, rgba(249, 115, 22, 0.12), transparent 28%),
+    linear-gradient(180deg, #f8faf8 0%, #eef4ef 42%, #f4efe8 100%);
+}
+
+.identity-screen__backdrop {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+  background-size: 36px 36px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.48), transparent 88%);
+}
+
+.identity-screen__content {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  display: flex;
+  min-height: 100vh;
+  max-width: 1120px;
+  flex-direction: column;
+  padding: 1.25rem;
+}
+
+.identity-topbar {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.identity-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.875rem;
+  color: #0f172a;
+}
+
+.identity-brand__mark {
+  display: inline-flex;
+  height: 3rem;
+  width: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1.25rem;
+  background: #0f172a;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+}
+
+.identity-brand__copy {
+  display: flex;
+  flex-direction: column;
+}
+
+.identity-brand__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+.identity-brand__subtitle,
+.identity-topbar__meta {
+  color: #64748b;
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+.identity-frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 2rem;
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: 0 35px 90px rgba(15, 23, 42, 0.12);
+  backdrop-filter: blur(20px);
+}
+
+.identity-frame__glow {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(80px);
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.identity-frame__glow--emerald {
+  top: -4rem;
+  right: -2rem;
+  height: 10rem;
+  width: 10rem;
+  background: rgba(16, 185, 129, 0.24);
+}
+
+.identity-frame__glow--amber {
+  bottom: -5rem;
+  left: -2rem;
+  height: 11rem;
+  width: 11rem;
+  background: rgba(249, 115, 22, 0.14);
+}
+
+.identity-frame__header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  padding: 1.5rem;
+}
+
+.identity-frame__intro {
+  max-width: 42rem;
+}
+
+.identity-frame__eyebrow {
+  display: inline-flex;
+  margin-bottom: 0.75rem;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.06);
+  padding: 0.42rem 0.78rem;
+  color: #0f172a;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+.identity-frame__intro h1 {
+  margin: 0;
+  color: #020617;
+  font-size: clamp(2rem, 5vw, 3.3rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+}
+
+.identity-frame__intro p {
+  margin: 0.9rem 0 0;
+  max-width: 38rem;
+  color: #475569;
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
+.identity-tabs {
+  display: inline-flex;
+  width: fit-content;
+  gap: 0.35rem;
+  border-radius: 9999px;
+  background: rgba(15, 23, 42, 0.045);
+  padding: 0.35rem;
+}
+
+.identity-tabs__link {
+  border-radius: 9999px;
+  padding: 0.85rem 1.15rem;
+  color: #475569;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition:
+    color 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.identity-tabs__link:hover {
+  color: #0f172a;
+}
+
+.identity-tabs__link--active {
+  background: #ffffff;
+  color: #020617;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.identity-frame__body {
+  position: relative;
+  padding: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .identity-screen__content {
+    padding: 1.5rem;
+  }
+
+  .identity-topbar {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .identity-frame__header,
+  .identity-frame__body {
+    padding: 2rem;
+  }
+}

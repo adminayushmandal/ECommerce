@@ -1,0 +1,205 @@
+@if (loading() && !product()) {
+  <div class="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+    <div class="aspect-square animate-pulse rounded-[2rem] bg-white/80"></div>
+    <div class="space-y-4">
+      <div class="h-5 w-28 animate-pulse rounded-full bg-white/80"></div>
+      <div class="h-12 animate-pulse rounded-2xl bg-white/80"></div>
+      <div class="h-24 animate-pulse rounded-[1.6rem] bg-white/80"></div>
+      <div class="h-40 animate-pulse rounded-[1.6rem] bg-white/80"></div>
+    </div>
+  </div>
+} @else if (notFound()) {
+  <section class="rounded-[2rem] border border-dashed border-slate-300 bg-white/85 px-6 py-10 text-center">
+    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">Product unavailable</p>
+    <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-950">This product could not be found.</h1>
+    <p class="mt-3 text-sm leading-6 text-slate-500">
+      The item may have been removed from the catalog or the route slug no longer matches an active product.
+    </p>
+    <a
+      routerLink="/"
+      class="mt-6 inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
+    >
+      Back to storefront
+    </a>
+  </section>
+} @else if (product(); as product) {
+  <section class="space-y-8">
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
+      <a routerLink="/" class="transition hover:text-slate-950">Storefront</a>
+      <span class="text-slate-300">/</span>
+      <span>{{ product.categoryName }}</span>
+      <span class="text-slate-300">/</span>
+      <span class="text-slate-950">{{ product.name }}</span>
+    </nav>
+
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+      <div class="space-y-4">
+        <div class="overflow-hidden rounded-[2.2rem] border border-white/70 bg-white/90 p-4 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+          <div class="overflow-hidden rounded-[1.8rem] bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff,_#f8fafc)]">
+            <img
+              [src]="selectedVariant()?.imageUrl || product.imageUrl"
+              [alt]="product.name"
+              class="aspect-square w-full object-cover"
+            />
+          </div>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-3">
+          <article class="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Category</p>
+            <p class="mt-3 text-base font-semibold text-slate-950">{{ product.categoryName }}</p>
+          </article>
+
+          <article class="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Variants</p>
+            <p class="mt-3 text-base font-semibold text-slate-950">{{ product.variants.length }} options</p>
+          </article>
+
+          <article class="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">SKU</p>
+            <p class="mt-3 text-base font-semibold text-slate-950">{{ selectedVariant()?.sku || product.sku }}</p>
+          </article>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+        <section class="rounded-[2.2rem] border border-white/70 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">{{ product.categoryName }}</p>
+          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-slate-950">{{ product.name }}</h1>
+          <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-500">{{ product.description }}</p>
+
+          <div class="mt-6 flex flex-wrap items-end justify-between gap-4 rounded-[1.6rem] bg-slate-50 px-5 py-5">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Selected price</p>
+              <p class="mt-2 text-4xl font-semibold tracking-tight text-slate-950">{{ formatCurrency(displayPrice()) }}</p>
+            </div>
+
+            <div class="rounded-[1.4rem] bg-white px-4 py-3 text-right shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Guest checkout</p>
+              <p class="mt-2 text-sm leading-6 text-slate-500">Add now, then sign in when you are ready to complete the order.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-[2.2rem] border border-slate-200 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Choose an option</p>
+              <h2 class="mt-2 text-xl font-semibold tracking-tight text-slate-950">Variant and quantity</h2>
+            </div>
+            @if (selectedVariant(); as variant) {
+              <div class="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900">
+                {{ variant.name }}
+              </div>
+            }
+          </div>
+
+          <div class="mt-5 grid gap-3">
+            @for (variant of product.variants; track variant.id) {
+              <button
+                type="button"
+                (click)="selectVariant(variant.id)"
+                class="rounded-[1.6rem] border px-4 py-4 text-left transition"
+                [class.border-slate-950]="selectedVariantId() === variant.id"
+                [class.bg-slate-950]="selectedVariantId() === variant.id"
+                [class.text-white]="selectedVariantId() === variant.id"
+                [class.shadow-[0_18px_38px_rgba(15,23,42,0.16)]]="selectedVariantId() === variant.id"
+                [class.border-slate-200]="selectedVariantId() !== variant.id"
+                [class.bg-slate-50]="selectedVariantId() !== variant.id"
+                [class.text-slate-950]="selectedVariantId() !== variant.id"
+              >
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <p class="text-base font-semibold">{{ variant.name }}</p>
+                    @if (variant.attributeSummary) {
+                      <p class="mt-1 text-sm leading-6" [class.text-white/72]="selectedVariantId() === variant.id" [class.text-slate-500]="selectedVariantId() !== variant.id">
+                        {{ variant.attributeSummary }}
+                      </p>
+                    }
+                  </div>
+
+                  <div class="text-left sm:text-right">
+                    <p class="text-xs uppercase tracking-[0.22em]" [class.text-white/60]="selectedVariantId() === variant.id" [class.text-slate-400]="selectedVariantId() !== variant.id">
+                      Price
+                    </p>
+                    <p class="mt-1 text-lg font-semibold">{{ formatCurrency(variant.effectivePrice) }}</p>
+                  </div>
+                </div>
+              </button>
+            }
+          </div>
+
+          <div class="mt-6 flex flex-col gap-4 rounded-[1.7rem] bg-slate-50 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Quantity</p>
+              <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white p-1">
+                <button
+                  type="button"
+                  class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
+                  (click)="decreaseQuantity()"
+                >
+                  <i class="pi pi-minus text-xs"></i>
+                </button>
+                <span class="min-w-12 text-center text-base font-semibold text-slate-950">{{ quantity() }}</span>
+                <button
+                  type="button"
+                  class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
+                  (click)="increaseQuantity()"
+                >
+                  <i class="pi pi-plus text-xs"></i>
+                </button>
+              </div>
+            </div>
+
+            <div class="grid gap-3 sm:min-w-[19rem]">
+              <button
+                type="button"
+                (click)="addToCart()"
+                class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                Add to cart
+              </button>
+
+              <button
+                type="button"
+                (click)="buyNow()"
+                class="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
+              >
+                Buy now
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    @if (relatedProducts().length > 0) {
+      <section class="space-y-4">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Keep browsing</p>
+          <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">More in {{ product.categoryName }}</h2>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-3">
+          @for (relatedProduct of relatedProducts(); track relatedProduct.id) {
+            <article class="overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white/92 p-4 shadow-[0_18px_55px_rgba(15,23,42,0.05)]">
+              <a [routerLink]="['/products', relatedProduct.slug]" class="block overflow-hidden rounded-[1.5rem]">
+                <img
+                  [src]="relatedProduct.imageUrl"
+                  [alt]="relatedProduct.name"
+                  class="aspect-square w-full rounded-[1.5rem] object-cover transition duration-500 hover:scale-[1.02]"
+                />
+              </a>
+
+              <p class="mt-4 text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{{ relatedProduct.categoryName }}</p>
+              <a [routerLink]="['/products', relatedProduct.slug]" class="mt-2 block text-lg font-semibold text-slate-950 transition hover:text-emerald-800">
+                {{ relatedProduct.name }}
+              </a>
+              <p class="mt-2 text-sm leading-6 text-slate-500">{{ relatedProduct.description }}</p>
+            </article>
+          }
+        </div>
+      </section>
+    }
+  </section>
+}

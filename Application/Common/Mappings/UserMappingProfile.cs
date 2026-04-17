@@ -9,6 +9,8 @@ public sealed class UserMappingProfile : Profile
     public UserMappingProfile()
     {
         CreateMap<User, UserDto>()
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email ?? string.Empty))
+            .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.PhoneNumber ?? string.Empty))
             .ForMember(
                 dest => dest.Roles,
                 opt => opt.MapFrom(src => src.UserRoles.Select(role => role.Role.Name).ToArray()));

@@ -10,7 +10,7 @@ string databaseName = "EcommerceDb";
 
 var database = postgres.AddDatabase(databaseName);
 
-builder.AddProject<Projects.ECommerce_Server>("api")
+var api = builder.AddProject<Projects.ECommerce_Server>("api")
     .WithExternalHttpEndpoints()
     .WithUrlForEndpoint("http", opt =>
     {
@@ -19,5 +19,10 @@ builder.AddProject<Projects.ECommerce_Server>("api")
     })
     .WithReference(database)
     .WaitFor(database);
+
+builder.AddJavaScriptApp("angular", "../ClientApp", runScriptName: "start")
+    .WithHttpEndpoint(port: 4200, env: "PORT")
+    .WithReference(api)
+    .WaitFor(api);
 
 builder.Build().Run();

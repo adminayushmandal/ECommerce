@@ -1,0 +1,54 @@
+<div class="identity-screen">
+  <div class="identity-screen__backdrop"></div>
+
+  <main class="identity-screen__content">
+    <header class="identity-topbar">
+      <a routerLink="/identity/login" class="identity-brand">
+        <span class="identity-brand__mark">EC</span>
+        <span class="identity-brand__copy">
+          <span class="identity-brand__title">ECommerce</span>
+          <span class="identity-brand__subtitle">Customer identity</span>
+        </span>
+      </a>
+
+      <p class="identity-topbar__meta">Secure sign in and account creation for checkout-ready sessions.</p>
+    </header>
+
+    <section class="identity-frame">
+      <div class="identity-frame__glow identity-frame__glow--emerald"></div>
+      <div class="identity-frame__glow identity-frame__glow--amber"></div>
+
+      <div class="identity-frame__header">
+        <div class="identity-frame__intro">
+          <span class="identity-frame__eyebrow">Identity</span>
+          <h1>Welcome back, or create your account in a cleaner flow.</h1>
+          <p>
+            Designed to keep attention on the task itself: entering details quickly, understanding validation clearly,
+            and moving to the storefront without friction.
+          </p>
+        </div>
+
+        <nav class="identity-tabs" aria-label="Authentication routes">
+          <a
+            routerLink="/identity/login"
+            routerLinkActive="identity-tabs__link--active"
+            class="identity-tabs__link"
+          >
+            Log in
+          </a>
+          <a
+            routerLink="/identity/signup"
+            routerLinkActive="identity-tabs__link--active"
+            class="identity-tabs__link"
+          >
+            Sign up
+          </a>
+        </nav>
+      </div>
+
+      <div class="identity-frame__body">
+        <router-outlet></router-outlet>
+      </div>
+    </section>
+  </main>
+</div>

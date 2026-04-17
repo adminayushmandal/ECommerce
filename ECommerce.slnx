@@ -8,6 +8,10 @@
   </Folder>
   <Folder Name="/Web/">
     <Project Path="Application/Application.csproj" Id="b52aa4c8-6a7e-4c98-ae42-c80ef0958ea4" />
+    <Project Path="ClientApp/ClientApp.esproj">
+      <Build />
+      <Deploy />
+    </Project>
     <Project Path="Domain/Domain.csproj" Id="65a36498-ecef-4ba5-a210-74ba9947bf47" />
     <Project Path="ECommerce.Server/ECommerce.Server.csproj" />
     <Project Path="Infrastructure/Infrastructure.csproj" Id="4798eef7-535c-4448-b8fb-8f437e15ba8f" />
