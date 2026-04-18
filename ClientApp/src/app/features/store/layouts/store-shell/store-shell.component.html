@@ -39,21 +39,26 @@
             <a
               routerLink="/identity/login"
               [queryParams]="secureCheckoutQueryParams()"
-              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              aria-label="Sign in"
+              pTooltip="Sign in"
+              tooltipPosition="bottom"
+              class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
             >
-              Sign in
+              <i class="pi pi-sign-in"></i>
             </a>
           }
 
           <button
             type="button"
             (click)="openCart()"
-            class="inline-flex items-center gap-3 rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white shadow-[0_18px_32px_rgba(15,23,42,0.16)] transition hover:bg-emerald-900"
+            aria-label="Open cart"
+            pTooltip="Open cart"
+            tooltipPosition="bottom"
+            class="inline-flex items-center gap-2 rounded-full bg-slate-950 px-2 py-2 text-sm font-medium text-white shadow-[0_18px_32px_rgba(15,23,42,0.16)] transition hover:bg-emerald-900"
           >
-            <span class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/12">
+            <span class="icon-action-button h-8 w-8 bg-white/12 text-sm">
               <i class="pi pi-shopping-bag"></i>
             </span>
-            <span>Cart</span>
             <span class="inline-flex min-w-8 items-center justify-center rounded-full bg-white px-2 py-1 text-xs font-semibold text-slate-950">
               {{ guestCart.itemCount() }}
             </span>
@@ -98,6 +103,8 @@
         <button
           type="button"
           aria-label="Close cart"
+          pTooltip="Close cart"
+          tooltipPosition="left"
           class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-950"
           (click)="closeCart()"
         >
@@ -156,6 +163,8 @@
                     <button
                       type="button"
                       aria-label="Remove item"
+                      pTooltip="Remove item"
+                      tooltipPosition="left"
                       class="text-sm text-slate-400 transition hover:text-red-600"
                       (click)="removeItem(item.lineId)"
                     >
@@ -167,6 +176,9 @@
                     <div class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 p-1">
                       <button
                         type="button"
+                        aria-label="Decrease quantity"
+                        pTooltip="Decrease quantity"
+                        tooltipPosition="top"
                         class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-white hover:text-slate-950"
                         (click)="decreaseQuantity(item.lineId, item.quantity)"
                       >
@@ -175,6 +187,9 @@
                       <span class="min-w-10 text-center text-sm font-semibold text-slate-950">{{ item.quantity }}</span>
                       <button
                         type="button"
+                        aria-label="Increase quantity"
+                        pTooltip="Increase quantity"
+                        tooltipPosition="top"
                         class="inline-flex h-9 w-9 items-center justify-center rounded-full text-slate-500 transition hover:bg-white hover:text-slate-950"
                         (click)="increaseQuantity(item.lineId, item.quantity)"
                       >
@@ -209,25 +224,34 @@
           <div class="flex flex-wrap gap-2">
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              aria-label="Use my location"
+              pTooltip="Use my location"
+              tooltipPosition="top"
+              class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
               (click)="useBrowserLocation()"
             >
-              Use my location
+              <i class="pi pi-map-marker"></i>
             </button>
             <button
               type="button"
-              class="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:border-emerald-300"
+              aria-label="Use Ludhiana demo location"
+              pTooltip="Use Ludhiana demo location"
+              tooltipPosition="top"
+              class="icon-action-button border border-emerald-200 bg-emerald-50 text-emerald-800 hover:border-emerald-300"
               (click)="useLudhianaDemoLocation()"
             >
-              Use Ludhiana demo
+              <i class="pi pi-map"></i>
             </button>
             @if (shopperLocationState()) {
               <button
                 type="button"
-                class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+                aria-label="Clear location"
+                pTooltip="Clear location"
+                tooltipPosition="top"
+                class="icon-action-button border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-900"
                 (click)="clearLocation()"
               >
-                Clear
+                <i class="pi pi-filter-slash"></i>
               </button>
             }
           </div>

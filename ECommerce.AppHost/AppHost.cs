@@ -9,18 +9,7 @@ var postgres = builder.AddPostgres("postgres")
     .WithPgAdmin();
 
 string databaseName = "EcommerceDb";
-
 var database = postgres.AddDatabase(databaseName);
-
-// =======================================================================
-
-// ==================Ollama container for hosting the Ollama API and models.==================
-var ollama = builder.AddOllamaLocal("AgentContainer")
-    .AddModel("qwen3.6:35b");
-
-// =======================================================================
-
-var modelId = builder.AddParameter("ModelId");
 
 var api = builder.AddProject<Projects.ECommerce_Server>("api")
     .WithExternalHttpEndpoints()
@@ -29,10 +18,7 @@ var api = builder.AddProject<Projects.ECommerce_Server>("api")
         opt.DisplayText = "Scalar API reference";
         opt.Url = "/scalar";
     })
-    .WithEnvironment("Enma:ModelId", modelId)
     .WithReference(database)
-    .WithReference(ollama)
-    .WaitFor(ollama)
     .WaitFor(database);
 
 builder.AddJavaScriptApp("ClientApp", "../ClientApp", runScriptName: "start")

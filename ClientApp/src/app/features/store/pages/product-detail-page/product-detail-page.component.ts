@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, injec
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 import { map } from 'rxjs';
 
 import {
@@ -21,7 +22,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TooltipModule],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

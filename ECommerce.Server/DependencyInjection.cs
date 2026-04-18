@@ -18,6 +18,7 @@ namespace ECommerce.Server
             });
 
             builder.Services.AddScoped<IUser, CurrentUser>();
+
         }
     }
 }

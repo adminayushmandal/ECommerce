@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 import { filter, map, startWith } from 'rxjs';
 
 import { AccountSessionService } from '../../../../core/services/account-session.service';
@@ -12,7 +13,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 @Component({
   selector: 'app-store-shell',
   standalone: true,
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, TooltipModule],
   templateUrl: './store-shell.component.html',
   styleUrl: './store-shell.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

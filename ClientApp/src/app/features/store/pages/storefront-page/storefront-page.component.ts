@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { TooltipModule } from 'primeng/tooltip';
 import { switchMap } from 'rxjs';
 
 import {
@@ -19,7 +20,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 @Component({
   selector: 'app-storefront-page',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, TooltipModule],
   templateUrl: './storefront-page.component.html',
   styleUrl: './storefront-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

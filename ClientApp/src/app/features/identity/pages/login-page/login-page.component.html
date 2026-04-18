@@ -1,7 +1,8 @@
 <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]">
   <section class="space-y-6">
     <div class="space-y-3">
-      <span class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-800">
+      <span
+        class="inline-flex rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-emerald-800">
         Welcome back
       </span>
       <div>
@@ -13,13 +14,13 @@
     </div>
 
     <div class="space-y-3">
-    @if (successMessage()) {
+      @if (successMessage()) {
       <p-message severity="success" [text]="successMessage() ?? ''"></p-message>
-    }
+      }
 
-    @if (errorMessage()) {
+      @if (errorMessage()) {
       <p-message severity="error" [text]="errorMessage() ?? ''"></p-message>
-    }
+      }
     </div>
 
     <form class="space-y-6" [formGroup]="loginForm" (ngSubmit)="submit()">
@@ -28,23 +29,16 @@
           <label class="text-sm font-medium text-slate-700" for="login-email">Email address</label>
           <div class="relative">
             <i class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
-            <input
-              id="login-email"
-              pInputText
-              formControlName="email"
-              type="email"
-              inputmode="email"
-              autocomplete="email"
-              placeholder="you@example.com"
+            <input id="login-email" pInputText formControlName="email" type="email" inputmode="email"
+              autocomplete="email" placeholder="you@example.com"
               class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white"
-              [class.border-red-300]="isInvalid('email')"
-            />
+              [class.border-red-300]="isInvalid('email')" />
           </div>
 
           @if (isInvalid('email')) {
-            <p class="text-sm text-red-600">
-              Enter a valid email address.
-            </p>
+          <p class="text-sm text-red-600">
+            Enter a valid email address.
+          </p>
           }
         </div>
 
@@ -56,25 +50,21 @@
             </a>
           </div>
 
-          <p-password
-            inputId="login-password"
-            formControlName="password"
-            [toggleMask]="true"
-            [feedback]="false"
+          <p-password inputId="login-password" formControlName="password" [toggleMask]="true" [feedback]="false"
             [styleClass]="'w-full'"
             [inputStyleClass]="'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-emerald-400 focus:bg-white'"
-            placeholder="Enter your password"
-          ></p-password>
+            placeholder="Enter your password"></p-password>
 
           @if (isInvalid('password')) {
-            <p class="text-sm text-red-600">
-              Password must be at least 6 characters.
-            </p>
+          <p class="text-sm text-red-600">
+            Password must be at least 6 characters.
+          </p>
           }
         </div>
       </div>
 
-      <div class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-slate-50/85 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div
+        class="flex flex-col gap-4 rounded-3xl border border-slate-200 bg-slate-50/85 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <label class="flex items-center gap-3 text-sm text-slate-600">
           <p-checkbox formControlName="rememberMe" [binary]="true"></p-checkbox>
           Keep me signed in on this device
@@ -82,23 +72,15 @@
 
         <p class="text-sm text-slate-500">
           New here?
-          <a
-            routerLink="/identity/signup"
-            [queryParams]="signupQueryParams"
-            class="font-semibold text-slate-900 transition hover:text-emerald-900"
-          >
+          <a routerLink="/identity/signup" [queryParams]="signupQueryParams"
+            class="font-semibold text-slate-900 transition hover:text-emerald-900">
             Create an account
           </a>
         </p>
       </div>
 
-      <button
-        pButton
-        type="submit"
-        [loading]="submitting()"
-        label="Sign in"
-        class="w-full rounded-2xl !border-0 !bg-slate-950 px-4 py-3 !text-white shadow-[0_18px_35px_rgba(15,23,42,0.18)] transition hover:!bg-emerald-900"
-      ></button>
+      <button pButton type="submit" [loading]="submitting()" label="Sign in"
+        class="w-full rounded-2xl !border-0 !bg-slate-950 px-4 py-3 !text-white shadow-[0_18px_35px_rgba(15,23,42,0.18)] transition hover:!bg-emerald-900"></button>
     </form>
   </section>
 
@@ -106,12 +88,13 @@
     <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">What you get</p>
     <div class="mt-4 space-y-3">
       @for (signal of trustSignals; track signal) {
-        <div class="flex gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
-          <span class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">
-            <i class="pi pi-check text-[11px]"></i>
-          </span>
-          <p class="text-sm leading-6 text-slate-600">{{ signal }}</p>
-        </div>
+      <div class="flex gap-3 rounded-2xl bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+        <span
+          class="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-xs font-bold text-emerald-700">
+          <i class="pi pi-check text-[11px]"></i>
+        </span>
+        <p class="text-sm leading-6 text-slate-600">{{ signal }}</p>
+      </div>
       }
     </div>
 

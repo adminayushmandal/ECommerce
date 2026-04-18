@@ -12,20 +12,26 @@
           </p>
         </div>
 
-        <div class="grid gap-3 sm:min-w-[18rem]">
+        <div class="flex flex-wrap gap-3 sm:min-w-[18rem] sm:justify-end">
           <button
             type="button"
             (click)="useBrowserLocation()"
-            class="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-50"
+            aria-label="Use my current location"
+            pTooltip="Use my current location"
+            tooltipPosition="top"
+            class="icon-action-button bg-white text-slate-950 hover:bg-emerald-50"
           >
-            Use my current location
+            <i class="pi pi-map-marker"></i>
           </button>
           <button
             type="button"
             (click)="browseAllProducts()"
-            class="inline-flex items-center justify-center rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
+            aria-label="Browse all products"
+            pTooltip="Browse all products"
+            tooltipPosition="top"
+            class="icon-action-button border border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white"
           >
-            Browse all products instead
+            <i class="pi pi-map"></i>
           </button>
         </div>
       </div>
@@ -67,9 +73,12 @@
 
             <a
               href="#catalog"
-              class="inline-flex items-center justify-center rounded-full bg-white px-5 py-4 text-sm font-semibold text-slate-950 transition hover:bg-emerald-50"
+              aria-label="Explore catalog"
+              pTooltip="Explore catalog"
+              tooltipPosition="top"
+              class="icon-action-button h-12 w-12 bg-white text-slate-950 hover:bg-emerald-50"
             >
-              Explore catalog
+              <i class="pi pi-arrow-right"></i>
             </a>
           </div>
         </div>
@@ -114,16 +123,22 @@
           <button
             type="button"
             (click)="useBrowserLocation()"
-            class="inline-flex rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            aria-label="Update location"
+            pTooltip="Update location"
+            tooltipPosition="top"
+            class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
           >
-            Update
+            <i class="pi pi-refresh"></i>
           </button>
           <button
             type="button"
             (click)="askForLocationAgain()"
-            class="inline-flex rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+            aria-label="Change location mode"
+            pTooltip="Change location mode"
+            tooltipPosition="top"
+            class="icon-action-button border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-900"
           >
-            Change mode
+            <i class="pi pi-compass"></i>
           </button>
         </div>
       </article>
@@ -152,10 +167,13 @@
 
           <button
             type="button"
-            class="inline-flex self-start rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-600 transition hover:border-slate-300 hover:bg-slate-50"
+            aria-label="Refresh products"
+            pTooltip="Refresh products"
+            tooltipPosition="top"
+            class="icon-action-button self-start border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
             (click)="refreshProducts()"
           >
-            Refresh products
+            <i class="pi pi-refresh"></i>
           </button>
         </div>
 
@@ -255,21 +273,27 @@
                   </div>
                 </div>
 
-                <div class="mt-6 grid gap-3 sm:grid-cols-2">
+                <div class="mt-6 flex items-center justify-end gap-3">
                   <button
                     type="button"
                     (click)="addToCart(product)"
-                    class="inline-flex items-center justify-center rounded-full border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                    aria-label="Add to cart"
+                    pTooltip="Add to cart"
+                    tooltipPosition="top"
+                    class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
                   >
-                    Add to cart
+                    <i class="pi pi-shopping-cart"></i>
                   </button>
 
                   <button
                     type="button"
                     (click)="buyNow(product)"
-                    class="inline-flex items-center justify-center rounded-full bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
+                    aria-label="Buy now"
+                    pTooltip="Buy now"
+                    tooltipPosition="top"
+                    class="icon-action-button bg-slate-950 text-white hover:bg-emerald-900"
                   >
-                    Buy now
+                    <i class="pi pi-bolt"></i>
                   </button>
                 </div>
               </div>
@@ -309,9 +333,12 @@
       <a
         routerLink="/identity/login"
         [queryParams]="{ intent: 'checkout', redirectTo: '/' }"
-        class="mt-5 inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
+        aria-label="Continue to sign in"
+        pTooltip="Continue to sign in"
+        tooltipPosition="top"
+        class="icon-action-button mt-5 bg-slate-950 text-white hover:bg-emerald-900"
       >
-        Continue to sign in
+        <i class="pi pi-sign-in"></i>
       </a>
     </section>
   </aside>
