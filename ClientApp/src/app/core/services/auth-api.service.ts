@@ -46,6 +46,18 @@ export class AuthApiService {
       .pipe(catchError((error) => this.handleError(error)));
   }
 
+  logout(): Observable<void> {
+    return this.http
+      .post<void>(
+        `${this.usersApiUrl}/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      )
+      .pipe(catchError((error) => this.handleError(error)));
+  }
+
   private handleError(error: HttpErrorResponse) {
     const fallbackMessage = 'Something went wrong. Please try again.';
     const message =

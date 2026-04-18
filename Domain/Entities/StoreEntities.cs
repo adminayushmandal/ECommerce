@@ -145,4 +145,19 @@ public sealed class InventoryItem : BaseAuditableEntity
 
         ReservedQuantity += quantity;
     }
+
+    public void Release(int quantity)
+    {
+        if (quantity <= 0)
+        {
+            throw new InvalidInventoryReservationQuantityException(quantity);
+        }
+
+        if (ReservedQuantity < quantity)
+        {
+            throw new InvalidOperationException("Reserved quantity cannot be released below zero.");
+        }
+
+        ReservedQuantity -= quantity;
+    }
 }

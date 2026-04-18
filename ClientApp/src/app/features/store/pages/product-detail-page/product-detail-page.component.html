@@ -170,6 +170,96 @@
             </div>
           </div>
         </section>
+
+        <section class="rounded-[2.2rem] border border-slate-200 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+            <div>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Store availability</p>
+              <h2 class="mt-2 text-xl font-semibold tracking-tight text-slate-950">Check nearby stores for this item</h2>
+              <p class="mt-2 text-sm leading-6 text-slate-500">
+                Share your location to see which nearby store has this item in stock and sort results by distance.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <button
+                type="button"
+                (click)="useBrowserLocation()"
+                class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              >
+                Use my location
+              </button>
+              @if (hasShopperLocation()) {
+                <button
+                  type="button"
+                  (click)="clearLocation()"
+                  class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+                >
+                  Clear
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="mt-5 rounded-[1.4rem] bg-slate-50 px-4 py-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Selected location</p>
+            <p class="mt-2 text-sm font-medium text-slate-950">{{ shopperLocationLabel() }}</p>
+          </div>
+
+          @if (availabilityLoading()) {
+            <div class="mt-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+              Checking store availability for this variant.
+            </div>
+          } @else if (availabilityError()) {
+            <div class="mt-5 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-4 py-5 text-sm text-amber-900">
+              {{ availabilityError() }}
+            </div>
+          } @else if (nearestStore(); as store) {
+            <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
+              <article class="rounded-[1.7rem] border border-emerald-200 bg-emerald-50 p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Nearest available store</p>
+                <h3 class="mt-3 text-xl font-semibold text-slate-950">{{ store.storeName }}</h3>
+                <p class="mt-2 text-sm text-slate-600">{{ store.city }}, {{ store.state }} · {{ store.postalCode }}</p>
+                <p class="mt-4 text-sm font-medium text-slate-950">
+                  {{ store.canFulfill ? 'In stock at this store.' : 'Availability is limited at this store.' }}
+                </p>
+                <p class="mt-2 text-sm text-slate-500">
+                  {{ store.availableQuantity }} unit{{ store.availableQuantity === 1 ? '' : 's' }} available
+                  @if (store.distanceKilometers !== null) {
+                    <span class="text-slate-300">&bull;</span>
+                    {{ formatDistance(store.distanceKilometers) }}
+                  }
+                </p>
+              </article>
+
+              <div class="space-y-3">
+                @for (availabilityItem of availability(); track availabilityItem.storeId) {
+                  <article class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p class="text-sm font-semibold text-slate-950">{{ availabilityItem.storeName }}</p>
+                        <p class="mt-1 text-sm text-slate-500">{{ availabilityItem.city }}, {{ availabilityItem.state }}</p>
+                      </div>
+
+                      <div class="text-left sm:text-right">
+                        <p class="text-sm font-medium" [class.text-emerald-700]="availabilityItem.canFulfill" [class.text-amber-700]="!availabilityItem.canFulfill">
+                          {{ availabilityItem.availableQuantity }} available
+                        </p>
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">
+                          {{ formatDistance(availabilityItem.distanceKilometers) }}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
+                }
+              </div>
+            </div>
+          } @else {
+            <div class="mt-5 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+              No store availability records are available for this product yet.
+            </div>
+          }
+        </section>
       </div>
     </div>
 

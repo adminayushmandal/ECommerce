@@ -11,4 +11,7 @@ public sealed record ProductDto(
     string ImageUrl,
     decimal BasePrice,
     bool IsActive,
-    IReadOnlyList<ProductVariantDto> Variants);
+    IReadOnlyList<ProductVariantDto> Variants,
+    string? AvailableStoreId = null,
+    string? AvailableStoreName = null,
+    int? AvailableQuantity = null);

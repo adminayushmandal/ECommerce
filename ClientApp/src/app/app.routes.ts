@@ -4,6 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./features/store/store.routes').then((m) => m.storeRoutes),
+    title: "Ecommerce Store"
   },
   {
     path: 'identity',

@@ -42,3 +42,9 @@ public sealed class ProductVariantProductMismatchException(string productId, str
     public string ProductId { get; } = productId;
     public string ProductVariantId { get; } = productVariantId;
 }
+
+public sealed class ProductVariantSelectionRequiredException(string productId)
+    : BusinessLogicException($"A product variant must be selected for product '{productId}'.", 400)
+{
+    public string ProductId { get; } = productId;
+}

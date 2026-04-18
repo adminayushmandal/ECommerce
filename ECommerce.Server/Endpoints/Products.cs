@@ -80,10 +80,11 @@ public sealed class Products : EndpointGroupBase
     }
 
     private static async Task<Ok<IReadOnlyList<ProductDto>>> GetProducts(
+        string? storeId,
         ISender sender,
         CancellationToken cancellationToken)
     {
-        var products = await sender.Send(new GetProductsQuery(), cancellationToken);
+        var products = await sender.Send(new GetProductsQuery(storeId), cancellationToken);
         return TypedResults.Ok(products);
     }
 

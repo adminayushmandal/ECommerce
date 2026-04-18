@@ -3,9 +3,10 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 
-import { CatalogApiService } from '../../../../core/services/catalog-api.service';
+import { AccountSessionService } from '../../../../core/services/account-session.service';
 import { GuestCartService } from '../../../../core/services/guest-cart.service';
 import { formatCurrency } from '../../../../core/models/store.models';
+import { ShopperLocationService } from '../../../../core/services/shopper-location.service';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
@@ -18,22 +19,17 @@ import { ToastService } from '../../../../core/services/toast.service';
 })
 export class StoreShellComponent {
   private readonly router = inject(Router);
-  private readonly catalogApi = inject(CatalogApiService);
+  private readonly accountSession = inject(AccountSessionService);
+  private readonly shopperLocation = inject(ShopperLocationService);
   private readonly toast = inject(ToastService);
   protected readonly guestCart = inject(GuestCartService);
 
   protected readonly cartOpen = signal(false);
   protected readonly formatCurrency = formatCurrency;
-  protected readonly featuredCounts = computed(() => {
-    const products = this.catalogApi.products();
-    const categories = new Set(products.map((product) => product.categoryName));
-
-    return {
-      products: products.length,
-      categories: categories.size,
-      cartItems: this.guestCart.itemCount(),
-    };
-  });
+  protected readonly currentUser = this.accountSession.currentUser;
+  protected readonly isAuthenticated = this.accountSession.isAuthenticated;
+  protected readonly sessionLoading = this.accountSession.loading;
+  protected readonly shopperLocationState = this.shopperLocation.location;
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -43,6 +39,10 @@ export class StoreShellComponent {
     ),
     { initialValue: this.router.url }
   );
+
+  constructor() {
+    this.accountSession.refresh();
+  }
 
   protected openCart(): void {
     this.cartOpen.set(true);
@@ -75,8 +75,20 @@ export class StoreShellComponent {
     this.toast.info('Browsing continued', 'Your cart stays saved on this device.');
   }
 
-  protected proceedToCheckout(): void {
+  protected async proceedToCheckout(): Promise<void> {
     this.closeCart();
+    if (this.isAuthenticated()) {
+      const locationLabel = this.shopperLocationState()?.label;
+      this.toast.info(
+        'Account ready',
+        locationLabel
+          ? `Nearest-store allocation will use ${locationLabel.toLowerCase()} when checkout is wired to the live order flow.`
+          : 'Add a location first to get distance-aware store allocation during checkout.'
+      );
+      await this.router.navigate(['/account/profile']);
+      return;
+    }
+
     this.toast.info('Checkout ready', 'Sign in to continue with secure checkout.');
   }
 
@@ -85,5 +97,43 @@ export class StoreShellComponent {
       intent: 'checkout',
       redirectTo: this.currentUrl(),
     };
+  }
+
+  protected getUserInitials(): string {
+    const displayName = this.currentUser()?.displayName?.trim();
+    if (!displayName) {
+      return 'EC';
+    }
+
+    return displayName
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0).toUpperCase())
+      .join('');
+  }
+
+  protected getFirstName(): string {
+    const displayName = this.currentUser()?.displayName?.trim();
+    return displayName?.split(/\s+/)[0] ?? 'Account';
+  }
+
+  protected async useBrowserLocation(): Promise<void> {
+    const success = await this.shopperLocation.useBrowserLocation();
+    if (!success) {
+      this.toast.warn('Location unavailable', 'Allow browser location access, or use the Ludhiana demo location.');
+      return;
+    }
+
+    this.toast.success('Location updated', 'The storefront will now sort store availability by your location.');
+  }
+
+  protected useLudhianaDemoLocation(): void {
+    this.shopperLocation.useLudhianaDemoLocation();
+    this.toast.info('Demo location active', 'Using the Ludhiana store area for omnichannel availability previews.');
+  }
+
+  protected clearLocation(): void {
+    this.shopperLocation.clear();
+    this.toast.info('Location cleared', 'Store availability will be shown without distance-based ordering.');
   }
 }

@@ -22,6 +22,47 @@ export interface CatalogProduct {
   basePrice: number;
   isActive: boolean;
   variants: CatalogProductVariant[];
+  availableStoreId?: string | null;
+  availableStoreName?: string | null;
+  availableQuantity?: number | null;
+}
+
+export interface ShopperLocation {
+  latitude: number;
+  longitude: number;
+  label: string;
+  source: 'browser' | 'demo';
+}
+
+export interface ProductStoreAvailability {
+  storeId: string;
+  storeCode: string;
+  storeName: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  latitude: number;
+  longitude: number;
+  availableQuantity: number;
+  canFulfill: boolean;
+  distanceKilometers: number | null;
+}
+
+export interface NearestStore {
+  id: string;
+  code: string;
+  name: string;
+  addressLine1: string;
+  addressLine2: string | null;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  latitude: number;
+  longitude: number;
+  isActive: boolean;
+  distanceKilometers: number;
 }
 
 export interface GuestCartItem {
@@ -60,4 +101,12 @@ export function formatCurrency(value: number): string {
     currency: 'INR',
     maximumFractionDigits: 0,
   }).format(value);
+}
+
+export function formatDistance(distanceKilometers: number | null): string {
+  if (distanceKilometers == null) {
+    return 'Distance unavailable';
+  }
+
+  return `${distanceKilometers.toFixed(distanceKilometers >= 10 ? 0 : 1)} km away`;
 }

@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Observable, map } from 'rxjs';
 
 import { CatalogProduct } from '../models/store.models';
 
@@ -29,6 +30,16 @@ export class CatalogApiService {
 
   constructor() {
     this.loadProducts();
+  }
+
+  fetchProducts(storeId: string | null = null): Observable<CatalogProduct[]> {
+    const url = storeId
+      ? `${this.productsApiUrl}?storeId=${encodeURIComponent(storeId)}`
+      : this.productsApiUrl;
+
+    return this.http
+      .get<CatalogProduct[]>(url)
+      .pipe(map((products) => this.normalizeProducts(products)));
   }
 
   loadProducts(force = false): void {

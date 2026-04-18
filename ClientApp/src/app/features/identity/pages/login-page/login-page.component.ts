@@ -9,6 +9,7 @@ import { CheckboxModule } from 'primeng/checkbox';
 import { MessageModule } from 'primeng/message';
 
 import { AuthApiService } from '../../../../core/services/auth-api.service';
+import { AccountSessionService } from '../../../../core/services/account-session.service';
 
 @Component({
   selector: 'app-login-page',
@@ -21,6 +22,7 @@ import { AuthApiService } from '../../../../core/services/auth-api.service';
 export class LoginPageComponent {
   private readonly fb = inject(FormBuilder);
   private readonly authApi = inject(AuthApiService);
+  private readonly accountSession = inject(AccountSessionService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly redirectTo = this.route.snapshot.queryParamMap.get('redirectTo');
@@ -67,6 +69,7 @@ export class LoginPageComponent {
     try {
       const { email, password, rememberMe } = this.loginForm.getRawValue();
       await firstValueFrom(this.authApi.login({ email, password, rememberMe }));
+      this.accountSession.refresh(true);
       await this.router.navigateByUrl(this.getSafeRedirectTo() ?? '/');
     } catch (error) {
       this.errorMessage.set(error instanceof Error ? error.message : 'Unable to sign you in right now.');

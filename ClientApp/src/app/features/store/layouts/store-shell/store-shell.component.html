@@ -17,19 +17,33 @@
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <div class="hidden items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm text-slate-600 md:flex">
-            <span>{{ featuredCounts().products }} products</span>
-            <span class="text-slate-300">/</span>
-            <span>{{ featuredCounts().categories }} categories</span>
-          </div>
-
-          <a
-            routerLink="/identity/login"
-            [queryParams]="secureCheckoutQueryParams()"
-            class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-          >
-            Sign in
-          </a>
+          @if (sessionLoading() && !currentUser()) {
+            <div class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500">
+              Checking session
+            </div>
+          } @else if (isAuthenticated() && currentUser(); as user) {
+            <a
+              routerLink="/account/profile"
+              class="inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-left transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              <span class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-900">
+                {{ getUserInitials() }}
+              </span>
+              <span class="hidden min-w-0 flex-col sm:flex">
+                <span class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Account</span>
+                <span class="truncate text-sm font-semibold text-slate-950">{{ getFirstName() }}</span>
+              </span>
+              <i class="pi pi-angle-right text-sm text-slate-400"></i>
+            </a>
+          } @else {
+            <a
+              routerLink="/identity/login"
+              [queryParams]="secureCheckoutQueryParams()"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+            >
+              Sign in
+            </a>
+          }
 
           <button
             type="button"
@@ -70,10 +84,14 @@
     <div class="border-b border-slate-200 px-5 py-5">
       <div class="flex items-start justify-between gap-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">Guest Cart</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">{{ isAuthenticated() ? 'Account Cart' : 'Guest Cart' }}</p>
           <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Review your picks</h2>
           <p class="mt-2 text-sm leading-6 text-slate-500">
-            Your cart is saved on this device. Sign in when you are ready to move into secure account checkout.
+            @if (isAuthenticated()) {
+              Your account session is active. Review what you have saved and jump to your profile for account details and next steps.
+            } @else {
+              Your cart is saved on this device. Sign in when you are ready to move into secure account checkout.
+            }
           </p>
         </div>
 
@@ -128,7 +146,7 @@
                         <p class="mt-1 text-sm text-slate-500">
                           {{ item.variantName }}
                           @if (item.variantSummary) {
-                            <span class="text-slate-300">•</span>
+                            <span class="text-slate-300">&bull;</span>
                             {{ item.variantSummary }}
                           }
                         </p>
@@ -178,6 +196,44 @@
     </div>
 
     <div class="border-t border-slate-200 bg-white/90 px-5 py-5 backdrop-blur">
+      <div class="mb-4 rounded-[1.4rem] border border-slate-200 bg-slate-50 px-4 py-4">
+        <div class="flex flex-col gap-3">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Fulfillment location</p>
+            <p class="mt-2 text-sm font-medium text-slate-950">{{ shopperLocationState()?.label ?? 'No location selected yet' }}</p>
+            <p class="mt-1 text-sm leading-6 text-slate-500">
+              The backend now allocates the nearest store that can fulfill checkout. Save a location now to preview omnichannel behavior.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+              (click)="useBrowserLocation()"
+            >
+              Use my location
+            </button>
+            <button
+              type="button"
+              class="inline-flex items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-800 transition hover:border-emerald-300"
+              (click)="useLudhianaDemoLocation()"
+            >
+              Use Ludhiana demo
+            </button>
+            @if (shopperLocationState()) {
+              <button
+                type="button"
+                class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+                (click)="clearLocation()"
+              >
+                Clear
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+
       <div class="flex items-center justify-between text-sm text-slate-500">
         <span>Subtotal</span>
         <span class="text-lg font-semibold text-slate-950">{{ formatCurrency(guestCart.subtotal()) }}</span>
@@ -185,12 +241,12 @@
 
       <div class="mt-4 grid gap-3">
         <a
-          routerLink="/identity/login"
-          [queryParams]="secureCheckoutQueryParams()"
+          [routerLink]="isAuthenticated() ? '/account/profile' : '/identity/login'"
+          [queryParams]="isAuthenticated() ? undefined : secureCheckoutQueryParams()"
           class="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
           (click)="proceedToCheckout()"
         >
-          Sign in to checkout
+          {{ sessionLoading() && !currentUser() ? 'Loading account' : isAuthenticated() ? 'Open profile' : 'Sign in to checkout' }}
         </a>
 
         <button

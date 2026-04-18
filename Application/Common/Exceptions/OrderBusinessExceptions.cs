@@ -23,3 +23,12 @@ public sealed class EmptyCartCheckoutException()
 
 public sealed class InvalidOrderOperationException(string message)
     : BusinessLogicException(message, 400);
+
+public sealed class UnableToAllocateStoreException(string message)
+    : BusinessLogicException(message, 409);
+
+public sealed class StoreNotFoundException(string storeId)
+    : BusinessLogicException($"Store '{storeId}' was not found.", 404)
+{
+    public string StoreId { get; } = storeId;
+}

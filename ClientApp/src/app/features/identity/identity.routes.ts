@@ -15,11 +15,13 @@ export const identityRoutes: Routes = [
         path: 'login',
         loadComponent: () =>
           import('./pages/login-page/login-page.component').then((m) => m.LoginPageComponent),
+        title: "Login - ECommerce Store"
       },
       {
         path: 'signup',
         loadComponent: () =>
           import('./pages/signup-page/signup-page.component').then((m) => m.SignupPageComponent),
+        title: "Signup - ECommerce Store"
       },
     ],
   },

@@ -42,6 +42,10 @@ public sealed class AddCartItemCommandHandler(
                 throw new ProductVariantProductMismatchException(request.ProductId, productVariant.Id);
             }
         }
+        else if (product.Variants.Any(variant => variant.IsActive))
+        {
+            throw new ProductVariantSelectionRequiredException(request.ProductId);
+        }
 
         var cart = await orderRepository.GetDraftByUserIdAsync(userId, cancellationToken);
         if (cart is null)

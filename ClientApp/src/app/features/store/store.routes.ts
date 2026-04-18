@@ -17,6 +17,11 @@ export const storeRoutes: Routes = [
         loadComponent: () =>
           import('./pages/product-detail-page/product-detail-page.component').then((m) => m.ProductDetailPageComponent),
       },
+      {
+        path: 'account/profile',
+        loadComponent: () =>
+          import('./pages/profile-page/profile-page.component').then((m) => m.ProfilePageComponent),
+      },
     ],
   },
 ];

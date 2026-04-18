@@ -41,9 +41,10 @@ public sealed class Cart : EndpointGroupBase
 
         groupBuilder.MapPost(CheckoutCart, "checkout")
             .WithSummary("Checkout cart")
-            .WithDescription("Converts the current authenticated user's draft cart into an order.")
+            .WithDescription("Converts the current authenticated user's draft cart into an order and allocates the nearest store with sufficient stock when a store is not explicitly selected.")
             .Produces<OrderDto>()
             .ProducesProblem(StatusCodes.Status400BadRequest)
+            .ProducesProblem(StatusCodes.Status409Conflict)
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status404NotFound);
     }
@@ -118,7 +119,7 @@ public sealed class Cart : EndpointGroupBase
     public sealed record UpdateCartItemQuantityRequest(int Quantity);
 
     public sealed record CheckoutCartRequest(
-        string StoreId,
+        string? StoreId,
         string CustomerEmail,
         double CustomerLatitude,
         double CustomerLongitude);

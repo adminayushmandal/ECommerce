@@ -3,6 +3,7 @@ using Application.Common.Interfaces;
 using Application.Common.Models;
 using AutoMapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Features.Orders.Commands;
 
@@ -26,6 +27,13 @@ public sealed class CancelMyOrderCommandHandler(
             throw new InvalidOrderOperationException("Draft carts cannot be cancelled through the orders workflow.");
         }
 
+        if (order.Status == Domain.Enums.OrderStatus.Cancelled)
+        {
+            throw new InvalidOrderOperationException("The order is already cancelled.");
+        }
+
+        await ReleaseAllocatedInventoryAsync(order, cancellationToken);
+
         try
         {
             order.Cancel();
@@ -37,5 +45,38 @@ public sealed class CancelMyOrderCommandHandler(
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
         return mapper.Map<OrderDto>(order);
+    }
+
+    private async Task ReleaseAllocatedInventoryAsync(Domain.Entities.Order order, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(order.AllocatedStoreId))
+        {
+            return;
+        }
+
+        var productIds = order.Items
+            .Select(item => item.ProductId)
+            .Distinct(StringComparer.Ordinal)
+            .ToArray();
+
+        var inventoryItems = await applicationDbContext.InventoryItems
+            .Where(inventoryItem =>
+                inventoryItem.StoreId == order.AllocatedStoreId &&
+                productIds.Contains(inventoryItem.ProductId))
+            .ToListAsync(cancellationToken);
+
+        var inventoryByKey = inventoryItems.ToDictionary(
+            inventoryItem => (inventoryItem.ProductId, inventoryItem.ProductVariantId),
+            inventoryItem => inventoryItem);
+
+        foreach (var item in order.Items)
+        {
+            if (!inventoryByKey.TryGetValue((item.ProductId, item.ProductVariantId), out var inventoryItem))
+            {
+                throw new InvalidOrderOperationException("Allocated inventory records could not be found for the cancelled order.");
+            }
+
+            inventoryItem.Release(item.Quantity);
+        }
     }
 }

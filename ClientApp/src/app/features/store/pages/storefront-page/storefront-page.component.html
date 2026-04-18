@@ -1,19 +1,55 @@
 <section class="space-y-8">
+  @if (locationPromptOpen()) {
+    <section class="rounded-[2.25rem] border border-emerald-200 bg-[linear-gradient(135deg,#052e16_0%,#14532d_55%,#0f766e_115%)] px-6 py-7 text-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
+      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+        <div>
+          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Location-first storefront</p>
+          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+            Set your location to load the nearest store before you start browsing.
+          </h1>
+          <p class="mt-4 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
+            This storefront now supports an Instamart-style flow. We resolve the nearest store first, then display the products that store can actually fulfill.
+          </p>
+        </div>
+
+        <div class="grid gap-3 sm:min-w-[18rem]">
+          <button
+            type="button"
+            (click)="useBrowserLocation()"
+            class="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-50"
+          >
+            Use my current location
+          </button>
+          <button
+            type="button"
+            (click)="browseAllProducts()"
+            class="inline-flex items-center justify-center rounded-full border border-white/20 bg-transparent px-5 py-3 text-sm font-medium text-white/80 transition hover:bg-white/10 hover:text-white"
+          >
+            Browse all products instead
+          </button>
+        </div>
+      </div>
+    </section>
+  }
+
   <div class="space-y-8">
     <section class="overflow-hidden rounded-[2.25rem] border border-white/80 bg-[linear-gradient(135deg,#0f172a_0%,#134e4a_52%,#fb923c_140%)] px-6 py-7 text-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
         <div class="space-y-6">
           <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/80">
-            Guest storefront
+            @if (resolvedStore(); as store) {
+              {{ store.name }} storefront
+            } @else {
+              Flexible storefront
+            }
           </div>
 
           <div class="space-y-4">
             <h1 class="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Discover products, search fast, and build your cart without friction.
+              Browse the nearest store first, then move into secure checkout when you are ready.
             </h1>
             <p class="max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
-              This landing page is tuned for anonymous shopping journeys: clear catalog structure, eye-catching product cards,
-              quick add-to-cart actions, and deep product pages when someone wants more detail before they commit.
+              The storefront can now resolve the closest store from shopper location, scope the catalog to that store, and keep the route into account-based checkout intact.
             </p>
           </div>
 
@@ -52,21 +88,44 @@
 
     <section class="grid gap-4 md:grid-cols-3">
       <article class="rounded-[1.9rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Live catalog</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-950">{{ products().length }}</p>
-        <p class="mt-2 text-sm leading-6 text-slate-500">Every product card is wired to the real catalog API and filtered for active variants only.</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Store context</p>
+        <p class="mt-3 text-3xl font-semibold text-slate-950">
+          {{ resolvedStore()?.name ?? 'All products' }}
+        </p>
+        <p class="mt-2 text-sm leading-6 text-slate-500">
+          @if (resolvedStore(); as store) {
+            {{ store.city }}, {{ store.state }} · {{ formatDistance(store.distanceKilometers) }}
+          } @else {
+            Store-specific filtering is not active right now.
+          }
+        </p>
       </article>
 
       <article class="rounded-[1.9rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Search intent</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Visible catalog</p>
         <p class="mt-3 text-3xl font-semibold text-slate-950">{{ filteredProducts().length }}</p>
         <p class="mt-2 text-sm leading-6 text-slate-500">Results update instantly as users search across names, descriptions, categories, and variants.</p>
       </article>
 
       <article class="rounded-[1.9rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Smooth flow</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-950">1 tap</p>
-        <p class="mt-2 text-sm leading-6 text-slate-500">Visitors can jump from card to cart, or into a detailed product page before deciding.</p>
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Shopper location</p>
+        <p class="mt-3 text-3xl font-semibold text-slate-950">{{ shopperLocationState()?.label ?? 'Not set' }}</p>
+        <div class="mt-3 flex flex-wrap gap-2">
+          <button
+            type="button"
+            (click)="useBrowserLocation()"
+            class="inline-flex rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+          >
+            Update
+          </button>
+          <button
+            type="button"
+            (click)="askForLocationAgain()"
+            class="inline-flex rounded-full border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:border-slate-300 hover:text-slate-900"
+          >
+            Change mode
+          </button>
+        </div>
       </article>
     </section>
 
@@ -75,9 +134,19 @@
         <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Product gallery</p>
-            <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Browse by category or keyword</h2>
+            <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
+              @if (resolvedStore(); as store) {
+                Available from {{ store.name }}
+              } @else {
+                Browse by category or keyword
+              }
+            </h2>
             <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              The catalog keeps the layout readable on desktop and mobile, with strong spacing, clear pricing, and obvious actions.
+              @if (resolvedStore()) {
+                The catalog is scoped to the nearest store so customers only see products that local inventory can fulfill.
+              } @else {
+                The catalog keeps the layout readable on desktop and mobile, with strong spacing, clear pricing, and obvious actions.
+              }
             </p>
           </div>
 
@@ -167,15 +236,22 @@
 
                 <p class="mt-3 text-sm leading-6 text-slate-500">{{ product.description }}</p>
 
+                <div class="mt-4 rounded-[1.3rem] bg-emerald-50 px-3 py-3">
+                  <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-800">
+                    {{ product.availableStoreName ?? 'Catalog availability' }}
+                  </p>
+                  <p class="mt-1 text-sm font-medium text-emerald-950">{{ getLocalAvailability(product) }}</p>
+                </div>
+
                 <div class="mt-5 flex items-end justify-between gap-4">
                   <div>
                     <p class="text-xs uppercase tracking-[0.28em] text-slate-400">Starting at</p>
                     <p class="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{{ getStartingPrice(product) }}</p>
                   </div>
 
-                  <div class="rounded-2xl bg-emerald-50 px-3 py-2 text-right">
-                    <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-800">Default pick</p>
-                    <p class="mt-1 text-sm font-medium text-emerald-950">{{ getPrimaryVariantLabel(product) }}</p>
+                  <div class="rounded-2xl bg-slate-100 px-3 py-2 text-right">
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-600">Default pick</p>
+                    <p class="mt-1 text-sm font-medium text-slate-950">{{ getPrimaryVariantLabel(product) }}</p>
                   </div>
                 </div>
 
@@ -209,16 +285,16 @@
       <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">Why this flow works</p>
       <div class="mt-4 space-y-3">
         <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-          <p class="text-sm font-semibold text-slate-950">Clear hierarchy</p>
-          <p class="mt-2 text-sm leading-6 text-slate-500">Strong hero messaging, visible search, and high-contrast calls to action remove guesswork.</p>
+          <p class="text-sm font-semibold text-slate-950">Location comes first</p>
+          <p class="mt-2 text-sm leading-6 text-slate-500">The storefront can ask for location immediately and resolve the nearest store before the shopper starts browsing.</p>
         </div>
         <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-          <p class="text-sm font-semibold text-slate-950">Anonymous-friendly cart</p>
-          <p class="mt-2 text-sm leading-6 text-slate-500">Visitors can save a cart locally before they choose to authenticate for checkout.</p>
+          <p class="text-sm font-semibold text-slate-950">Store-aware catalog</p>
+          <p class="mt-2 text-sm leading-6 text-slate-500">Product cards can now reflect local inventory instead of an abstract global catalog.</p>
         </div>
         <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-          <p class="text-sm font-semibold text-slate-950">Deep product detail</p>
-          <p class="mt-2 text-sm leading-6 text-slate-500">Every product card routes to a dedicated detail page with variant selection and purchase actions.</p>
+          <p class="text-sm font-semibold text-slate-950">Checkout stays aligned</p>
+          <p class="mt-2 text-sm leading-6 text-slate-500">The backend already allocates the nearest fulfillable store during checkout, so the storefront and order flow are now moving in the same direction.</p>
         </div>
       </div>
     </section>
@@ -227,7 +303,7 @@
       <p class="text-xs font-semibold uppercase tracking-[0.32em] text-emerald-700">Checkout handoff</p>
       <h3 class="mt-3 text-xl font-semibold tracking-tight text-slate-950">Secure sign-in stays close to the purchase moment.</h3>
       <p class="mt-3 text-sm leading-6 text-slate-600">
-        The landing experience keeps the product journey public, then hands users into the existing authenticated flow when they are ready to complete checkout.
+        The landing experience can now start from shopper location and still hand users into the authenticated flow when they are ready to complete checkout.
       </p>
 
       <a

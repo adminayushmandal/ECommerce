@@ -1,11 +1,21 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 
-import { CatalogProductVariant, formatCurrency, getDefaultVariant, getSelectedPrice } from '../../../../core/models/store.models';
+import {
+  CatalogProductVariant,
+  ProductStoreAvailability,
+  formatCurrency,
+  formatDistance,
+  getDefaultVariant,
+  getSelectedPrice,
+} from '../../../../core/models/store.models';
 import { CatalogApiService } from '../../../../core/services/catalog-api.service';
 import { GuestCartService } from '../../../../core/services/guest-cart.service';
+import { ShopperLocationService } from '../../../../core/services/shopper-location.service';
+import { StoreApiService } from '../../../../core/services/store-api.service';
 import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
@@ -17,10 +27,14 @@ import { ToastService } from '../../../../core/services/toast.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductDetailPageComponent {
+  private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly title = inject(Title);
   private readonly catalogApi = inject(CatalogApiService);
   private readonly guestCart = inject(GuestCartService);
+  private readonly shopperLocation = inject(ShopperLocationService);
+  private readonly storeApi = inject(StoreApiService);
   private readonly toast = inject(ToastService);
 
   private currentProductId: string | null = null;
@@ -29,9 +43,14 @@ export class ProductDetailPageComponent {
   });
 
   protected readonly formatCurrency = formatCurrency;
+  protected readonly formatDistance = formatDistance;
   protected readonly loading = this.catalogApi.loading;
   protected readonly selectedVariantId = signal<string | null>(null);
   protected readonly quantity = signal(1);
+  protected readonly availability = signal<ProductStoreAvailability[]>([]);
+  protected readonly availabilityLoading = signal(false);
+  protected readonly availabilityError = signal<string | null>(null);
+  protected readonly shopperLocationLabel = computed(() => this.shopperLocation.location()?.label ?? 'No location selected');
   protected readonly product = computed(() => this.catalogApi.findBySlug(this.slug()));
   protected readonly notFound = computed(() => this.catalogApi.loaded() && !this.product());
   protected readonly selectedVariant = computed<CatalogProductVariant | null>(() => {
@@ -62,6 +81,8 @@ export class ProductDetailPageComponent {
       .filter((candidate) => candidate.categoryId === product.categoryId && candidate.id !== product.id)
       .slice(0, 3);
   });
+  protected readonly nearestStore = computed(() => this.availability().find((store) => store.canFulfill) ?? this.availability()[0] ?? null);
+  protected readonly hasShopperLocation = this.shopperLocation.hasLocation;
 
   constructor() {
     effect(() => {
@@ -73,6 +94,59 @@ export class ProductDetailPageComponent {
       this.currentProductId = product.id;
       this.selectedVariantId.set(getDefaultVariant(product)?.id ?? null);
       this.quantity.set(1);
+    });
+
+    effect(() => {
+      if (this.loading() && !this.product()) {
+        this.title.setTitle('Loading Product | ECommerce');
+        return;
+      }
+
+      if (this.notFound()) {
+        this.title.setTitle('Product Not Found | ECommerce');
+        return;
+      }
+
+      const product = this.product();
+      if (product) {
+        this.title.setTitle(`${product.name} | ECommerce`);
+      }
+    });
+
+    effect((onCleanup) => {
+      const product = this.product();
+      const variant = this.selectedVariant();
+      const shopperLocation = this.shopperLocation.location();
+
+      if (!product) {
+        this.availability.set([]);
+        this.availabilityError.set(null);
+        this.availabilityLoading.set(false);
+        return;
+      }
+
+      this.availabilityLoading.set(true);
+      this.availabilityError.set(null);
+
+      const subscription = this.storeApi
+        .getProductAvailability(product.id, variant?.id ?? null, shopperLocation)
+        .subscribe({
+          next: (availability) => {
+            this.availability.set(availability);
+            this.availabilityLoading.set(false);
+          },
+          error: (error: Error) => {
+            this.availability.set([]);
+            this.availabilityError.set(error.message);
+            this.availabilityLoading.set(false);
+          },
+        });
+
+      onCleanup(() => subscription.unsubscribe());
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.title.setTitle('ECommerce');
     });
   }
 
@@ -118,5 +192,20 @@ export class ProductDetailPageComponent {
         redirectTo: `/products/${product.slug}`,
       },
     });
+  }
+
+  protected async useBrowserLocation(): Promise<void> {
+    const success = await this.shopperLocation.useBrowserLocation();
+    if (!success) {
+      this.toast.warn('Location unavailable', 'Allow location access in the browser to sort nearby stores.');
+      return;
+    }
+
+    this.toast.success('Location updated', 'Store availability is now ordered by your current location.');
+  }
+
+  protected clearLocation(): void {
+    this.shopperLocation.clear();
+    this.toast.info('Location cleared', 'Store availability will be shown without distance-based ordering.');
   }
 }
