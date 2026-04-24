@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Entities.Vector;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Common.Interfaces
@@ -18,6 +19,8 @@ namespace Application.Common.Interfaces
         DbSet<Order> Orders { get; }
 
         DbSet<OrderItem> OrderItems { get; }
+
+        DbSet<ProductVectorRecord> ProductVectorRecords { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }

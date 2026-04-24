@@ -11,6 +11,11 @@ var postgres = builder.AddPostgres("postgres")
 string databaseName = "EcommerceDb";
 var database = postgres.AddDatabase(databaseName);
 
+var ollama = builder.AddOllamaLocal("ollama");
+
+var gemma4Chat = ollama.AddModel("gemma4:e2b");
+var embeddingGemma = ollama.AddModel("embeddinggemma:300m");
+
 var api = builder.AddProject<Projects.ECommerce_Server>("api")
     .WithExternalHttpEndpoints()
     .WithUrlForEndpoint("http", opt =>
@@ -18,7 +23,14 @@ var api = builder.AddProject<Projects.ECommerce_Server>("api")
         opt.DisplayText = "Scalar API reference";
         opt.Url = "/scalar";
     })
+    .WithEnvironment("Enma:ChatModel", "gemma4:e2b")
+    .WithEnvironment("Enma:EmbeddingModel", "embeddinggemma:300m")
+    .WithEnvironment("Enma:OllamaEndpoint", ollama.GetEndpoint("http"))
     .WithReference(database)
+    .WithReference(gemma4Chat)
+    .WithReference(embeddingGemma)
+    .WaitFor(gemma4Chat)
+    .WaitFor(embeddingGemma)
     .WaitFor(database);
 
 builder.AddJavaScriptApp("ClientApp", "../ClientApp", runScriptName: "start")

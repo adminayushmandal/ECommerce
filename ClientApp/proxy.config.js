@@ -15,5 +15,12 @@ module.exports = {
         secure: false,
         changeOrigin: true,
         logLevel: "debug",
+    },
+    "/hubs": {
+        target,
+        secure: false,
+        changeOrigin: true,
+        ws: true,
+        logLevel: "debug",
     }
 };

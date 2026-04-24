@@ -8,7 +8,8 @@ public sealed record DeleteProductVariantCommand(string ProductId, string Produc
 
 public sealed class DeleteProductVariantCommandHandler(
     IProductVariantRepository productVariantRepository,
-    IApplicationDbContext applicationDbContext)
+    IApplicationDbContext applicationDbContext,
+    IProductVectorIndexingService productVectorIndexingService)
     : IRequestHandler<DeleteProductVariantCommand, bool>
 {
     public async Task<bool> Handle(DeleteProductVariantCommand request, CancellationToken cancellationToken)
@@ -23,6 +24,7 @@ public sealed class DeleteProductVariantCommandHandler(
 
         productVariantRepository.Remove(productVariant);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await productVectorIndexingService.DeleteProductVariantAsync(productVariant.Id, cancellationToken);
 
         return true;
     }

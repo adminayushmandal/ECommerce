@@ -2,6 +2,7 @@ using Application.Common.Interfaces;
 using Domain.Entities;
 using Infrastructure.Repositories;
 using Infrastructure.Services;
+using Microsoft.Extensions.AI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +18,7 @@ namespace Infrastructure
             builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
             {
                 options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-                options.UseNpgsql(connectionString);
+                options.UseNpgsql(connectionString, o => o.UseVector());
                 options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
             });
 
@@ -29,6 +30,8 @@ namespace Infrastructure
             builder.Services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
+            builder.Services.AddScoped<IProductVectorIndexingService, ProductVectorIndexingService>();
+            builder.Services.AddHostedService<ProductVectorSyncHostedService>();
 
             builder.Services.AddIdentityApiEndpoints<User>()
                 .AddRoles<Role>()

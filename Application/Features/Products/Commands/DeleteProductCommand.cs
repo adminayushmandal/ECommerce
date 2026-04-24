@@ -8,7 +8,8 @@ public sealed record DeleteProductCommand(string ProductId) : IRequest<bool>;
 
 public sealed class DeleteProductCommandHandler(
     IProductRepository productRepository,
-    IApplicationDbContext applicationDbContext)
+    IApplicationDbContext applicationDbContext,
+    IProductVectorIndexingService productVectorIndexingService)
     : IRequestHandler<DeleteProductCommand, bool>
 {
     public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -16,8 +17,13 @@ public sealed class DeleteProductCommandHandler(
         var product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken)
             ?? throw new ProductNotFoundException(request.ProductId);
 
+        var productVariantIds = product.Variants
+            .Select(variant => variant.Id)
+            .ToArray();
+
         productRepository.Remove(product);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await productVectorIndexingService.DeleteProductAsync(product.Id, productVariantIds, cancellationToken);
 
         return true;
     }

@@ -1,4 +1,5 @@
 ﻿using Application.Common.Interfaces;
+using Domain.Common.Interfaces;
 using ECommerce.Server.Services;
 
 namespace ECommerce.Server
@@ -16,9 +17,11 @@ namespace ECommerce.Server
                 opt.AddOperationTransformer<IdentityApiOperationTransformer>();
                 opt.AddDocumentTransformer<BearerSecuritySchemaOperationTransformer>();
             });
+            builder.Services.AddSignalR();
 
             builder.Services.AddScoped<IUser, CurrentUser>();
 
+            builder.Services.AddSingleton<IKernelAgentServiceProvider, KernelAgentServiceProvider>();
         }
     }
 }

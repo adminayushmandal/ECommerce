@@ -20,6 +20,7 @@ public sealed class CreateProductVariantCommandHandler(
     IProductRepository productRepository,
     IProductVariantRepository productVariantRepository,
     IApplicationDbContext applicationDbContext,
+    IProductVectorIndexingService productVectorIndexingService,
     IMapper mapper)
     : IRequestHandler<CreateProductVariantCommand, ProductVariantDto>
 {
@@ -47,6 +48,7 @@ public sealed class CreateProductVariantCommandHandler(
 
         await productVariantRepository.AddAsync(productVariant, cancellationToken);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await productVectorIndexingService.IndexProductVariantAsync(productVariant.Id, cancellationToken);
 
         var createdProductVariant = await productVariantRepository.GetByIdAsync(productVariant.Id, cancellationToken)
             ?? throw new ProductVariantNotFoundException(productVariant.Id);

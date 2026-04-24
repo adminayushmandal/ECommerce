@@ -1,5 +1,6 @@
-﻿using Application.Common.Interfaces;
+using Application.Common.Interfaces;
 using Domain.Entities;
+using Domain.Entities.Vector;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +18,14 @@ namespace Infrastructure.Data
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
 
+        public DbSet<ProductVectorRecord> ProductVectorRecords => Set<ProductVectorRecord>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
             builder.HasDefaultSchema("ecommerce");
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            builder.HasPostgresExtension("vector");
 
             builder.Entity<IdentityUserClaim<string>>(e => e.ToTable("UserClaims"));
             builder.Entity<IdentityUserLogin<string>>(e => e.ToTable("UserLogins"));

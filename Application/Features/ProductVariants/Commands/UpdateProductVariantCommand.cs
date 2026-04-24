@@ -20,6 +20,7 @@ public sealed class UpdateProductVariantCommandHandler(
     IProductRepository productRepository,
     IProductVariantRepository productVariantRepository,
     IApplicationDbContext applicationDbContext,
+    IProductVectorIndexingService productVectorIndexingService,
     IMapper mapper)
     : IRequestHandler<UpdateProductVariantCommand, ProductVariantDto>
 {
@@ -53,6 +54,7 @@ public sealed class UpdateProductVariantCommandHandler(
         productVariant.SetActive(request.IsActive);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await productVectorIndexingService.IndexProductVariantAsync(productVariant.Id, cancellationToken);
 
         return mapper.Map<ProductVariantDto>(productVariant);
     }

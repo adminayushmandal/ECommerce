@@ -1,5 +1,6 @@
 using Application;
 using Infrastructure.Data;
+using ECommerce.Server.Hubs;
 using Serilog;
 using System.Security.Claims;
 
@@ -68,6 +69,7 @@ try
     app.UseHttpsRedirection();
 
     app.MapEndpoints();
+    app.MapHub<EnmaHub>("/hubs/enma");
 
     app.Run();
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Shared.Constants;
 using System.Security.Claims;
 using Infrastructure.Data.SeedData;
+using Application.Common.Interfaces;
 
 namespace Infrastructure.Data
 {
@@ -23,7 +24,11 @@ namespace Infrastructure.Data
         }
     }
 
-    internal sealed class DatabaseSeedingService(ApplicationDbContext context, ILogger<DatabaseSeedingService> logger, UserManager<User> userManager, RoleManager<Role> roleManager)
+    internal sealed class DatabaseSeedingService(
+        ApplicationDbContext context,
+        ILogger<DatabaseSeedingService> logger,
+        UserManager<User> userManager,
+        RoleManager<Role> roleManager)
     {
         public async Task InitializeMigrationAsync(bool isDevelopment)
         {

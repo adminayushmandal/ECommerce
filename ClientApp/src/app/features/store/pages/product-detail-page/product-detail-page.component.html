@@ -240,14 +240,14 @@
               <article class="rounded-[1.7rem] border border-emerald-200 bg-emerald-50 p-5">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Nearest available store</p>
                 <h3 class="mt-3 text-xl font-semibold text-slate-950">{{ store.storeName }}</h3>
-                <p class="mt-2 text-sm text-slate-600">{{ store.city }}, {{ store.state }} · {{ store.postalCode }}</p>
+                <p class="mt-2 text-sm text-slate-600">{{ store.city }}, {{ store.state }} | {{ store.postalCode }}</p>
                 <p class="mt-4 text-sm font-medium text-slate-950">
                   {{ store.canFulfill ? 'In stock at this store.' : 'Availability is limited at this store.' }}
                 </p>
                 <p class="mt-2 text-sm text-slate-500">
                   {{ store.availableQuantity }} unit{{ store.availableQuantity === 1 ? '' : 's' }} available
                   @if (store.distanceKilometers !== null) {
-                    <span class="text-slate-300">&bull;</span>
+                    <span class="text-slate-300">|</span>
                     {{ formatDistance(store.distanceKilometers) }}
                   }
                 </p>
@@ -283,6 +283,167 @@
         </section>
       </div>
     </div>
+
+    <button
+      type="button"
+      (click)="openEnmaDialog()"
+      aria-label="Open Enma assistant"
+      pTooltip="Ask Enma"
+      tooltipPosition="left"
+      class="enma-launcher"
+    >
+      <span class="enma-launcher__pulse"></span>
+      <span class="enma-launcher__icon">
+        <i class="pi pi-comments"></i>
+      </span>
+      <span class="enma-launcher__copy">
+        <span class="enma-launcher__eyebrow">Enma</span>
+        <span class="enma-launcher__title">Ask AI</span>
+      </span>
+    </button>
+
+    <p-dialog
+      [visible]="enmaDialogVisible()"
+      (visibleChange)="handleEnmaDialogVisibleChange($event)"
+      [modal]="true"
+      [dismissableMask]="true"
+      [draggable]="false"
+      [resizable]="false"
+      [maximizable]="true"
+      [style]="{ width: '72rem', maxWidth: '96vw' }"
+      [breakpoints]="{ '1280px': '94vw', '960px': '96vw', '640px': '100vw' }"
+      styleClass="enma-dialog"
+      header="Enma Assistant"
+    >
+      <div class="enma-chat-shell">
+        <header class="enma-chat-shell__header">
+          <div class="enma-chat-shell__identity">
+            <div class="enma-chat-shell__badge">
+              <i class="pi pi-sparkles"></i>
+            </div>
+            <div>
+              <p class="enma-chat-shell__eyebrow">Grounded on this product</p>
+              <h2 class="enma-chat-shell__title">{{ product.name }}</h2>
+            </div>
+          </div>
+
+          <div class="enma-chat-shell__presence" [class.enma-chat-shell__presence--busy]="enmaStreaming()">
+            <span class="enma-chat-shell__presence-dot"></span>
+            {{ enmaStreaming() ? 'Streaming' : 'Ready' }}
+          </div>
+        </header>
+
+        <div #enmaTimeline class="enma-chat-shell__timeline">
+          @if (!hasEnmaMessages()) {
+            <section class="enma-chat-shell__empty">
+              <div class="enma-chat-shell__empty-icon">
+                <i class="pi pi-comments"></i>
+              </div>
+              <h3>Ask Enma like a chat assistant</h3>
+              <p>
+                Ask about pricing, variants, fit, materials, or a quick summary. The answer streams here live from this product's indexed context.
+              </p>
+
+              <div class="enma-chat-shell__chips">
+                @for (suggestion of enmaSuggestions(); track suggestion) {
+                  <button type="button" (click)="applyEnmaSuggestion(suggestion)" class="enma-suggestion">
+                    {{ suggestion }}
+                  </button>
+                }
+              </div>
+            </section>
+          }
+
+          @for (message of enmaMessages(); track message.id) {
+            <article
+              class="enma-message"
+              [class.enma-message--user]="message.role === 'user'"
+              [class.enma-message--assistant]="message.role === 'assistant'"
+            >
+              @if (message.role === 'assistant') {
+                <div class="enma-avatar">
+                  <i class="pi pi-sparkles"></i>
+                </div>
+              }
+
+              <div class="enma-bubble" [class.enma-bubble--error]="message.error">
+                <p class="enma-bubble__meta">{{ message.role === 'user' ? 'You' : 'Enma' }}</p>
+                @if (message.role === 'assistant') {
+                  <div
+                    class="enma-bubble__text enma-bubble__text--rich"
+                    [innerHTML]="formatEnmaMessageContent(message.content || (message.streaming ? 'Thinking...' : ''))"
+                  ></div>
+                  @if (message.streaming) {
+                    <span class="enma-caret ml-1 align-middle"></span>
+                  }
+                } @else {
+                  <p class="enma-bubble__text">
+                    {{ message.content }}
+                  </p>
+                }
+              </div>
+            </article>
+          }
+        </div>
+
+        <footer class="enma-composer">
+          @if (!hasEnmaMessages()) {
+            <div class="enma-composer__chips">
+              @for (suggestion of enmaSuggestions(); track suggestion) {
+                <button type="button" (click)="applyEnmaSuggestion(suggestion)" class="enma-suggestion enma-suggestion--soft">
+                  {{ suggestion }}
+                </button>
+              }
+            </div>
+          }
+
+          <div class="enma-composer__surface">
+            <textarea
+              id="enma-prompt"
+              rows="3"
+              [value]="enmaPrompt()"
+              (input)="updateEnmaPrompt($any($event.target).value)"
+              (keydown)="handleEnmaPromptKeydown($event)"
+              placeholder="Message Enma about this product..."
+              class="enma-textarea"
+            ></textarea>
+
+            <div class="enma-composer__footer">
+              <p class="enma-card__hint">
+                Enma answers only from this product page context.
+              </p>
+
+              <div class="enma-actions">
+                @if (enmaStreaming()) {
+                  <button
+                    type="button"
+                    (click)="stopEnma()"
+                    class="enma-button enma-button--icon enma-button--ghost"
+                    aria-label="Stop Enma response"
+                    pTooltip="Stop"
+                    tooltipPosition="top"
+                  >
+                    <i class="pi pi-stop-circle"></i>
+                  </button>
+                }
+
+                <button
+                  type="button"
+                  (click)="askEnma()"
+                  [disabled]="!canAskEnma()"
+                  class="enma-button enma-button--icon enma-button--primary"
+                  aria-label="Send message to Enma"
+                  pTooltip="Send"
+                  tooltipPosition="top"
+                >
+                  <i class="pi pi-arrow-up"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </p-dialog>
 
     @if (relatedProducts().length > 0) {
       <section class="space-y-4">

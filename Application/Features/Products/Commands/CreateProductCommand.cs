@@ -21,6 +21,7 @@ public sealed class CreateProductCommandHandler(
     ICategoryRepository categoryRepository,
     IProductRepository productRepository,
     IApplicationDbContext applicationDbContext,
+    IProductVectorIndexingService productVectorIndexingService,
     IMapper mapper)
     : IRequestHandler<CreateProductCommand, ProductDto>
 {
@@ -54,6 +55,7 @@ public sealed class CreateProductCommandHandler(
 
         await productRepository.AddAsync(product, cancellationToken);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await productVectorIndexingService.IndexProductGraphAsync(product.Id, cancellationToken);
 
         var createdProduct = await productRepository.GetByIdAsync(product.Id, cancellationToken)
             ?? throw new ProductNotFoundException(product.Id);

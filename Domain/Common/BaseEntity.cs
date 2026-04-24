@@ -4,7 +4,7 @@ namespace Domain.Common
 {
     public abstract class BaseEntity : IDomainEvent
     {
-        public string Id { get; private set; }
+        public virtual string Id { get; private set; }
 
         private readonly List<BaseEvent> _domainEvents = [];
         [NotMapped]

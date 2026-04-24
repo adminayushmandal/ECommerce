@@ -21,6 +21,7 @@ public sealed class UpdateProductCommandHandler(
     ICategoryRepository categoryRepository,
     IProductRepository productRepository,
     IApplicationDbContext applicationDbContext,
+    IProductVectorIndexingService productVectorIndexingService,
     IMapper mapper)
     : IRequestHandler<UpdateProductCommand, ProductDto>
 {
@@ -56,6 +57,7 @@ public sealed class UpdateProductCommandHandler(
         product.SetActive(request.IsActive);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await productVectorIndexingService.IndexProductGraphAsync(product.Id, cancellationToken);
 
         return mapper.Map<ProductDto>(product);
     }
