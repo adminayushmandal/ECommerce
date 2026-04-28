@@ -13,6 +13,7 @@ public sealed class Order : BaseAuditableEntity
     public OrderStatus Status { get; private set; } = OrderStatus.Draft;
     public decimal TotalAmount { get; private set; }
     public ICollection<OrderItem> Items { get; private set; } = [];
+    public ICollection<Payment> Payments { get; private set; } = [];
 
     private Order()
     {
@@ -30,6 +31,27 @@ public sealed class Order : BaseAuditableEntity
     public void AllocateToStore(string storeId)
     {
         AllocatedStoreId = storeId;
+        Status = OrderStatus.Allocated;
+    }
+
+    public void BeginPayment(string storeId)
+    {
+        if (Items.Count == 0)
+        {
+            throw new InvalidOperationException("Cannot start payment for an empty cart.");
+        }
+
+        AllocatedStoreId = storeId;
+        Status = OrderStatus.PendingPayment;
+    }
+
+    public void ConfirmPayment()
+    {
+        if (Status != OrderStatus.PendingPayment)
+        {
+            throw new InvalidOperationException("Only pending payment orders can be confirmed.");
+        }
+
         Status = OrderStatus.Allocated;
     }
 

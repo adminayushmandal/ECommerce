@@ -1,4 +1,5 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using MediatR;
 
@@ -9,7 +10,8 @@ public sealed record DeleteProductCommand(string ProductId) : IRequest<bool>;
 public sealed class DeleteProductCommandHandler(
     IProductRepository productRepository,
     IApplicationDbContext applicationDbContext,
-    IProductVectorIndexingService productVectorIndexingService)
+    IProductVectorIndexingService productVectorIndexingService,
+    IApplicationCache applicationCache)
     : IRequestHandler<DeleteProductCommand, bool>
 {
     public async Task<bool> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -23,6 +25,7 @@ public sealed class DeleteProductCommandHandler(
 
         productRepository.Remove(product);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await applicationCache.InvalidateRegionAsync(CacheRegions.Catalog, cancellationToken);
         await productVectorIndexingService.DeleteProductAsync(product.Id, productVariantIds, cancellationToken);
 
         return true;

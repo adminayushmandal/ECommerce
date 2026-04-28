@@ -3,9 +3,10 @@ namespace Domain.Enums;
 public enum OrderStatus
 {
     Draft = 0,
-    Allocated = 1,
-    Packed = 2,
-    Shipped = 3,
-    Delivered = 4,
-    Cancelled = 5
+    PendingPayment = 1,
+    Allocated = 2,
+    Packed = 3,
+    Shipped = 4,
+    Delivered = 5,
+    Cancelled = 6
 }

@@ -1,12 +1,12 @@
 <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_19rem]">
   <section class="space-y-6">
     <div class="space-y-3">
-      <span class="inline-flex rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-orange-800">
+      <span class="inline-flex rounded-full bg-neutral-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.28em] text-neutral-800">
         New customer
       </span>
       <div>
-        <h2 class="text-3xl font-semibold tracking-tight text-slate-950">Create your account</h2>
-        <p class="mt-2 max-w-xl text-sm leading-6 text-slate-500">
+        <h2 class="text-3xl font-semibold tracking-tight text-neutral-950">Create your account</h2>
+        <p class="mt-2 max-w-xl text-sm leading-6 text-neutral-500">
           A simple registration flow with the details your profile actually needs. No filler, just the information
           required to create a usable customer account.
         </p>
@@ -20,9 +20,9 @@
     <form class="space-y-6" [formGroup]="signupForm" (ngSubmit)="submit()">
       <div class="grid gap-5 md:grid-cols-2">
         <div class="space-y-2 md:col-span-2">
-          <label class="text-sm font-medium text-slate-700" for="signup-display-name">Display name</label>
+          <label class="text-sm font-medium text-neutral-700" for="signup-display-name">Display name</label>
           <div class="relative">
-            <i class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+            <i class="pi pi-user absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-400"></i>
             <input
               id="signup-display-name"
               pInputText
@@ -30,7 +30,7 @@
               type="text"
               autocomplete="name"
               placeholder="Ayush Mandal"
-              class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-orange-400 focus:bg-white"
+              class="w-full rounded-md border border-neutral-200 bg-neutral-50 py-3 pl-11 pr-4 text-neutral-900 transition outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
               [class.border-red-300]="isInvalid('displayName')"
             />
           </div>
@@ -43,9 +43,9 @@
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-slate-700" for="signup-email">Email address</label>
+          <label class="text-sm font-medium text-neutral-700" for="signup-email">Email address</label>
           <div class="relative">
-            <i class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+            <i class="pi pi-envelope absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-400"></i>
             <input
               id="signup-email"
               pInputText
@@ -54,7 +54,7 @@
               inputmode="email"
               autocomplete="email"
               placeholder="you@example.com"
-              class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-orange-400 focus:bg-white"
+              class="w-full rounded-md border border-neutral-200 bg-neutral-50 py-3 pl-11 pr-4 text-neutral-900 transition outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
               [class.border-red-300]="isInvalid('email')"
             />
           </div>
@@ -67,9 +67,9 @@
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-slate-700" for="signup-phone">Phone number</label>
+          <label class="text-sm font-medium text-neutral-700" for="signup-phone">Phone number</label>
           <div class="relative">
-            <i class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-sm text-slate-400"></i>
+            <i class="pi pi-phone absolute left-4 top-1/2 -translate-y-1/2 text-sm text-neutral-400"></i>
             <input
               id="signup-phone"
               pInputText
@@ -78,7 +78,7 @@
               inputmode="tel"
               autocomplete="tel"
               placeholder="+91 98765 43210"
-              class="w-full rounded-2xl border border-slate-200 bg-slate-50 py-3 pl-11 pr-4 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-orange-400 focus:bg-white"
+              class="w-full rounded-md border border-neutral-200 bg-neutral-50 py-3 pl-11 pr-4 text-neutral-900 transition outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white"
               [class.border-red-300]="isInvalid('phoneNumber')"
             />
           </div>
@@ -91,7 +91,7 @@
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-slate-700" for="signup-password">Password</label>
+          <label class="text-sm font-medium text-neutral-700" for="signup-password">Password</label>
           <p-password
             inputId="signup-password"
             formControlName="password"
@@ -102,7 +102,7 @@
             mediumLabel="Good start"
             strongLabel="Strong password"
             [styleClass]="'w-full'"
-            [inputStyleClass]="'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-orange-400 focus:bg-white'"
+            [inputStyleClass]="'w-full rounded-md border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-900 transition outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white'"
             placeholder="Create a password"
           ></p-password>
 
@@ -114,14 +114,14 @@
         </div>
 
         <div class="space-y-2">
-          <label class="text-sm font-medium text-slate-700" for="signup-confirm-password">Confirm password</label>
+          <label class="text-sm font-medium text-neutral-700" for="signup-confirm-password">Confirm password</label>
           <p-password
             inputId="signup-confirm-password"
             formControlName="confirmPassword"
             [toggleMask]="true"
             [feedback]="false"
             [styleClass]="'w-full'"
-            [inputStyleClass]="'w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-slate-900 transition outline-none placeholder:text-slate-400 focus:border-orange-400 focus:bg-white'"
+            [inputStyleClass]="'w-full rounded-md border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-900 transition outline-none placeholder:text-neutral-400 focus:border-neutral-400 focus:bg-white'"
             placeholder="Repeat your password"
           ></p-password>
 
@@ -133,13 +133,13 @@
         </div>
       </div>
 
-      <div class="rounded-3xl border border-slate-200 bg-slate-50/85 px-4 py-4">
-        <p class="text-sm leading-6 text-slate-600">
+      <div class="rounded-lg border border-neutral-200 bg-neutral-50/85 px-4 py-4">
+        <p class="text-sm leading-6 text-neutral-600">
           Already have an account?
           <a
             routerLink="/identity/login"
             [queryParams]="loginQueryParams"
-            class="font-semibold text-slate-900 transition hover:text-orange-700"
+            class="font-semibold text-neutral-900 transition hover:text-neutral-700"
           >
             Sign in instead
           </a>
@@ -151,24 +151,24 @@
         type="submit"
         [loading]="submitting()"
         label="Create account"
-        class="w-full rounded-2xl !border-0 !bg-orange-600 px-4 py-3 !text-white shadow-[0_18px_35px_rgba(234,88,12,0.22)] transition hover:!bg-orange-700"
+        class="w-full rounded-md !border-0 !bg-neutral-950 px-4 py-3 !text-white shadow-[0_18px_35px_rgba(23,23,23,0.18)] transition hover:!bg-neutral-800"
       ></button>
     </form>
   </section>
 
-  <aside class="rounded-[1.75rem] border border-slate-200 bg-slate-50/75 p-5">
-    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-500">Before you submit</p>
+  <aside class="rounded-lg border border-neutral-200 bg-neutral-50/75 p-5">
+    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-neutral-500">Before you submit</p>
     <div class="mt-4 space-y-3">
       @for (note of signupNotes; track note) {
-        <div class="rounded-2xl bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
-          <p class="text-sm leading-6 text-slate-600">{{ note }}</p>
+        <div class="rounded-md bg-white px-4 py-3 shadow-[0_8px_24px_rgba(15,23,42,0.04)]">
+          <p class="text-sm leading-6 text-neutral-600">{{ note }}</p>
         </div>
       }
     </div>
 
-    <div class="mt-5 rounded-3xl bg-orange-600 px-5 py-4 text-white shadow-[0_18px_35px_rgba(234,88,12,0.22)]">
+    <div class="mt-5 rounded-lg bg-neutral-950 px-5 py-4 text-white shadow-[0_18px_35px_rgba(23,23,23,0.18)]">
       <p class="text-sm font-medium">Designed for a fast first purchase.</p>
-      <p class="mt-2 text-sm leading-6 text-orange-50/90">
+      <p class="mt-2 text-sm leading-6 text-neutral-50/90">
         Create the account once, then return through the login flow with your email already in place.
       </p>
     </div>

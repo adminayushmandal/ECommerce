@@ -1,0 +1,306 @@
+:host {
+  display: block;
+}
+
+.manager-dashboard {
+  display: grid;
+  gap: 1rem;
+}
+
+.manager-eyebrow {
+  margin: 0;
+  color: var(--cloth-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.manager-hero,
+.manager-panel,
+.manager-access-state,
+.manager-alert {
+  border: 1px solid var(--cloth-line);
+  background: #ffffff;
+}
+
+.manager-hero {
+  display: grid;
+  gap: 1rem;
+  align-items: end;
+  padding: clamp(1rem, 3vw, 1.35rem);
+}
+
+.manager-hero h1,
+.manager-panel h2,
+.manager-access-state h1 {
+  margin: 0.15rem 0 0;
+  color: var(--cloth-ink);
+  font-family: "Anton", "Poppins", sans-serif;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 0.95;
+  text-transform: uppercase;
+}
+
+.manager-hero h1 {
+  font-size: clamp(3rem, 8vw, 5.8rem);
+}
+
+.manager-panel h2,
+.manager-access-state h1 {
+  font-size: clamp(1.9rem, 4vw, 3rem);
+}
+
+.manager-hero p:not(.manager-eyebrow),
+.manager-access-state p:not(.manager-eyebrow) {
+  margin: 0.4rem 0 0;
+  color: var(--cloth-muted);
+}
+
+.manager-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: end;
+}
+
+.manager-toolbar label,
+.manager-product-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--cloth-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.manager-toolbar select,
+.manager-search,
+.manager-product-form input,
+.manager-product-form select,
+.manager-product-form textarea {
+  min-height: 2.75rem;
+  border: 1px solid var(--cloth-line);
+  border-radius: 0;
+  background: #ffffff;
+  color: var(--cloth-ink);
+}
+
+.manager-toolbar select,
+.manager-product-form input,
+.manager-product-form select,
+.manager-product-form textarea {
+  padding: 0.65rem 0.75rem;
+}
+
+.manager-alert {
+  display: flex;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  color: var(--cloth-accent);
+  font-weight: 700;
+}
+
+.manager-metrics {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--cloth-line);
+  background: var(--cloth-line);
+}
+
+.manager-metrics article {
+  display: grid;
+  gap: 0.45rem;
+  background: #ffffff;
+  padding: 1rem;
+}
+
+.manager-metrics span,
+.manager-payment-row span,
+.manager-payment-row small {
+  color: var(--cloth-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.manager-metrics strong {
+  color: var(--cloth-ink);
+  font-family: "Anton", "Poppins", sans-serif;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  font-weight: 400;
+  line-height: 0.95;
+}
+
+.manager-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.manager-panel {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
+  padding: clamp(1rem, 3vw, 1.2rem);
+}
+
+.manager-panel__header {
+  display: flex;
+  gap: 1rem;
+  align-items: start;
+  justify-content: space-between;
+}
+
+.manager-search {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.55rem;
+  align-items: center;
+  background: var(--cloth-panel-muted);
+  padding: 0 0.75rem;
+}
+
+.manager-search input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  outline: none;
+}
+
+.manager-product-list,
+.manager-payment-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.manager-product-row {
+  display: grid;
+  grid-template-columns: 3.4rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+  width: 100%;
+  border: 1px solid var(--cloth-line);
+  background: #ffffff;
+  padding: 0.55rem;
+  color: var(--cloth-ink);
+  text-align: left;
+}
+
+.manager-product-row--active {
+  border-color: var(--cloth-ink);
+  box-shadow: inset 0 0 0 1px var(--cloth-ink);
+}
+
+.manager-product-row__visual {
+  display: block;
+  aspect-ratio: 1;
+}
+
+.manager-product-row strong,
+.manager-payment-row strong {
+  display: block;
+  color: var(--cloth-ink);
+}
+
+.manager-product-row small {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--cloth-muted);
+  font-size: 0.72rem;
+}
+
+.manager-product-row em {
+  color: var(--cloth-accent);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.manager-product-form,
+.manager-form-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.manager-check {
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+}
+
+.manager-check input {
+  width: 1rem;
+  min-height: 1rem;
+  accent-color: var(--cloth-ink);
+}
+
+.manager-variant-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.manager-variant-strip span {
+  border: 1px solid var(--cloth-line);
+  padding: 0.4rem 0.55rem;
+  color: var(--cloth-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.manager-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.manager-payment-row {
+  display: grid;
+  gap: 0.75rem;
+  align-items: center;
+  border: 1px solid var(--cloth-line);
+  padding: 0.8rem;
+}
+
+.manager-payment-row span,
+.manager-payment-row small {
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.manager-empty-state,
+.manager-loading,
+.manager-access-state {
+  display: grid;
+  gap: 1rem;
+  justify-items: start;
+  padding: clamp(1.2rem, 4vw, 2rem);
+}
+
+@media (min-width: 640px) {
+  .manager-hero {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .manager-metrics {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .manager-form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .manager-payment-row {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) auto auto;
+  }
+}
+
+@media (min-width: 1100px) {
+  .manager-grid {
+    grid-template-columns: minmax(18rem, 0.85fr) minmax(0, 1.15fr);
+  }
+}

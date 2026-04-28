@@ -20,6 +20,10 @@ namespace Application.Common.Interfaces
 
         DbSet<OrderItem> OrderItems { get; }
 
+        DbSet<Payment> Payments { get; }
+
+        DbSet<PaymentEvent> PaymentEvents { get; }
+
         DbSet<ProductVectorRecord> ProductVectorRecords { get; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

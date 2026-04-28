@@ -1,20 +1,28 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, NgZone, ViewChild, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TagModule } from 'primeng/tag';
+import { TextareaModule } from 'primeng/textarea';
 import { TooltipModule } from 'primeng/tooltip';
 import { map } from 'rxjs';
 
 import {
+  canRenderImageUrl,
   CatalogProductVariant,
   ProductStoreAvailability,
   formatCurrency,
   formatDistance,
   getDefaultVariant,
+  getProductVisualBackground,
+  getSwatchColor,
   getSelectedPrice,
 } from '../../../../core/models/store.models';
 import { CatalogApiService } from '../../../../core/services/catalog-api.service';
+import { CheckoutFlowService } from '../../../../core/services/checkout-flow.service';
 import { EnmaApiService } from '../../../../core/services/enma-api.service';
 import { GuestCartService } from '../../../../core/services/guest-cart.service';
 import { ShopperLocationService } from '../../../../core/services/shopper-location.service';
@@ -32,7 +40,7 @@ interface EnmaChatMessage {
 @Component({
   selector: 'app-product-detail-page',
   standalone: true,
-  imports: [RouterLink, TooltipModule, DialogModule],
+  imports: [RouterLink, ButtonModule, DialogModule, SkeletonModule, TagModule, TextareaModule, TooltipModule],
   templateUrl: './product-detail-page.component.html',
   styleUrl: './product-detail-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,10 +52,10 @@ export class ProductDetailPageComponent {
   private readonly cdr = inject(ChangeDetectorRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
   private readonly title = inject(Title);
   private readonly ngZone = inject(NgZone);
   private readonly catalogApi = inject(CatalogApiService);
+  private readonly checkoutFlow = inject(CheckoutFlowService);
   private readonly enmaApi = inject(EnmaApiService);
   private readonly guestCart = inject(GuestCartService);
   private readonly shopperLocation = inject(ShopperLocationService);
@@ -62,6 +70,7 @@ export class ProductDetailPageComponent {
 
   protected readonly formatCurrency = formatCurrency;
   protected readonly formatDistance = formatDistance;
+  protected readonly canRenderImageUrl = canRenderImageUrl;
   protected readonly loading = this.catalogApi.loading;
   protected readonly selectedVariantId = signal<string | null>(null);
   protected readonly quantity = signal(1);
@@ -337,6 +346,14 @@ export class ProductDetailPageComponent {
     this.selectedVariantId.set(variantId);
   }
 
+  protected getProductVisualBackground(imageUrl: string): string {
+    return getProductVisualBackground(imageUrl);
+  }
+
+  protected getVariantSwatchColor(variant: CatalogProductVariant | null): string {
+    return getSwatchColor(variant?.imageUrl ?? this.product()?.imageUrl);
+  }
+
   protected increaseQuantity(): void {
     this.quantity.update((quantity) => quantity + 1);
   }
@@ -367,13 +384,10 @@ export class ProductDetailPageComponent {
     this.guestCart.addItem(product, this.selectedVariant(), this.quantity());
     this.toast.info(
       'Checkout started',
-      `${product.name}${this.selectedVariant()?.name ? ` (${this.selectedVariant()?.name})` : ''} was added to your cart. Sign in to continue checkout.`
+      `${product.name}${this.selectedVariant()?.name ? ` (${this.selectedVariant()?.name})` : ''} was added to your bag.`
     );
-    await this.router.navigate(['/identity/login'], {
-      queryParams: {
-        intent: 'checkout',
-        redirectTo: `/products/${product.slug}`,
-      },
+    await this.checkoutFlow.startPayPalCheckout({
+      redirectTo: `/products/${product.slug}`,
     });
   }
 

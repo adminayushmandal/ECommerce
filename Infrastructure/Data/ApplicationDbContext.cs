@@ -17,6 +17,8 @@ namespace Infrastructure.Data
         public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
         public DbSet<Order> Orders => Set<Order>();
         public DbSet<OrderItem> OrderItems => Set<OrderItem>();
+        public DbSet<Payment> Payments => Set<Payment>();
+        public DbSet<PaymentEvent> PaymentEvents => Set<PaymentEvent>();
 
         public DbSet<ProductVectorRecord> ProductVectorRecords => Set<ProductVectorRecord>();
 

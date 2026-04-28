@@ -1,4 +1,5 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Mappings;
 using Application.Common.Interfaces;
 using Application.Common.Models;
@@ -10,23 +11,38 @@ namespace Application.Features.Products.Queries;
 
 public sealed record GetProductsQuery(string? StoreId = null) : IRequest<IReadOnlyList<ProductDto>>;
 
-public sealed class GetProductsQueryHandler(IApplicationDbContext applicationDbContext, IStoreRepository storeRepository, IMapper mapper)
+public sealed class GetProductsQueryHandler(
+    IApplicationDbContext applicationDbContext,
+    IStoreRepository storeRepository,
+    IApplicationCache applicationCache,
+    IMapper mapper)
     : IRequestHandler<GetProductsQuery, IReadOnlyList<ProductDto>>
 {
     public async Task<IReadOnlyList<ProductDto>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
         if (!string.IsNullOrWhiteSpace(request.StoreId))
         {
-            return await GetStoreCatalogAsync(request.StoreId, cancellationToken);
+            return await applicationCache.GetOrCreateAsync(
+                CacheRegions.Catalog,
+                $"products:store:{request.StoreId}",
+                CacheDurations.StoreCatalog,
+                token => GetStoreCatalogAsync(request.StoreId, token),
+                cancellationToken);
         }
 
-        return await applicationDbContext.Products
-            .AsNoTracking()
-            .OrderBy(product => product.Name)
-            .ProjectToListAsync<ProductDto>(mapper.ConfigurationProvider, cancellationToken);
+        return await applicationCache.GetOrCreateAsync(
+            CacheRegions.Catalog,
+            "products:all",
+            CacheDurations.CatalogProducts,
+            async token => (await applicationDbContext.Products
+                .AsNoTracking()
+                .Where(product => product.IsActive && product.Category.IsActive)
+                .OrderBy(product => product.Name)
+                .ProjectToListAsync<ProductDto>(mapper.ConfigurationProvider, token)).ToArray(),
+            cancellationToken);
     }
 
-    private async Task<IReadOnlyList<ProductDto>> GetStoreCatalogAsync(string storeId, CancellationToken cancellationToken)
+    private async Task<ProductDto[]> GetStoreCatalogAsync(string storeId, CancellationToken cancellationToken)
     {
         var store = await storeRepository.GetByIdAsync(storeId, cancellationToken)
             ?? throw new StoreNotFoundException(storeId);
@@ -35,6 +51,9 @@ public sealed class GetProductsQueryHandler(IApplicationDbContext applicationDbC
             .AsNoTracking()
             .Where(inventoryItem =>
                 inventoryItem.StoreId == storeId &&
+                inventoryItem.Product.IsActive &&
+                inventoryItem.Product.Category.IsActive &&
+                (inventoryItem.ProductVariantId == null || inventoryItem.ProductVariant!.IsActive) &&
                 inventoryItem.QuantityOnHand > inventoryItem.ReservedQuantity)
             .GroupBy(inventoryItem => inventoryItem.ProductId)
             .Select(group => new
@@ -55,7 +74,7 @@ public sealed class GetProductsQueryHandler(IApplicationDbContext applicationDbC
             .AsNoTracking()
             .Include(product => product.Category)
             .Include(product => product.Variants)
-            .Where(product => productIds.Contains(product.Id))
+            .Where(product => productIds.Contains(product.Id) && product.IsActive && product.Category.IsActive)
             .OrderBy(product => product.Name)
             .ToListAsync(cancellationToken);
 

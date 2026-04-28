@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Application.Common.Services;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
 
@@ -16,6 +17,7 @@ namespace Application
                 opt.AddMaps(Assembly.GetExecutingAssembly());
             });
 
+            builder.Services.AddScoped<OrderCheckoutService>();
             builder.Services.AddHostedService<Common.Mappings.AutoMapperValidationHostedService>();
         }
     }

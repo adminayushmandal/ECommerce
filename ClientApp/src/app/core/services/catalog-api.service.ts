@@ -1,8 +1,13 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map, tap, throwError } from 'rxjs';
 
-import { CatalogProduct } from '../models/store.models';
+import {
+  CatalogProduct,
+  CatalogProductRequest,
+  CatalogProductVariant,
+  CatalogProductVariantRequest,
+} from '../models/store.models';
 
 interface CatalogState {
   products: CatalogProduct[];
@@ -40,6 +45,101 @@ export class CatalogApiService {
     return this.http
       .get<CatalogProduct[]>(url)
       .pipe(map((products) => this.normalizeProducts(products)));
+  }
+
+  getProduct(productId: string): Observable<CatalogProduct> {
+    return this.http
+      .get<CatalogProduct>(`${this.productsApiUrl}/${encodeURIComponent(productId)}`)
+      .pipe(
+        map((product) => this.normalizeProduct(product)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  createProduct(request: CatalogProductRequest): Observable<CatalogProduct> {
+    return this.http
+      .post<CatalogProduct>(this.productsApiUrl, request, { withCredentials: true })
+      .pipe(
+        map((product) => this.normalizeProduct(product)),
+        tap(() => this.loadProducts(true)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  updateProduct(productId: string, request: CatalogProductRequest): Observable<CatalogProduct> {
+    return this.http
+      .put<CatalogProduct>(`${this.productsApiUrl}/${encodeURIComponent(productId)}`, request, { withCredentials: true })
+      .pipe(
+        map((product) => this.normalizeProduct(product)),
+        tap((product) => this.upsertCachedProduct(product)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  deleteProduct(productId: string): Observable<void> {
+    return this.http
+      .delete<void>(`${this.productsApiUrl}/${encodeURIComponent(productId)}`, { withCredentials: true })
+      .pipe(
+        tap(() => this.removeCachedProduct(productId)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  getProductVariants(productId: string): Observable<CatalogProductVariant[]> {
+    return this.http
+      .get<CatalogProductVariant[]>(`${this.productsApiUrl}/${encodeURIComponent(productId)}/variants`)
+      .pipe(
+        map((variants) => this.normalizeVariants(variants)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  getProductVariant(productId: string, variantId: string): Observable<CatalogProductVariant> {
+    return this.http
+      .get<CatalogProductVariant>(
+        `${this.productsApiUrl}/${encodeURIComponent(productId)}/variants/${encodeURIComponent(variantId)}`
+      )
+      .pipe(catchError((error) => this.handleError(error)));
+  }
+
+  createProductVariant(productId: string, request: CatalogProductVariantRequest): Observable<CatalogProductVariant> {
+    return this.http
+      .post<CatalogProductVariant>(`${this.productsApiUrl}/${encodeURIComponent(productId)}/variants`, request, {
+        withCredentials: true,
+      })
+      .pipe(
+        tap(() => this.loadProducts(true)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  updateProductVariant(
+    productId: string,
+    variantId: string,
+    request: CatalogProductVariantRequest
+  ): Observable<CatalogProductVariant> {
+    return this.http
+      .put<CatalogProductVariant>(
+        `${this.productsApiUrl}/${encodeURIComponent(productId)}/variants/${encodeURIComponent(variantId)}`,
+        request,
+        { withCredentials: true }
+      )
+      .pipe(
+        tap(() => this.loadProducts(true)),
+        catchError((error) => this.handleError(error))
+      );
+  }
+
+  deleteProductVariant(productId: string, variantId: string): Observable<void> {
+    return this.http
+      .delete<void>(
+        `${this.productsApiUrl}/${encodeURIComponent(productId)}/variants/${encodeURIComponent(variantId)}`,
+        { withCredentials: true }
+      )
+      .pipe(
+        tap(() => this.loadProducts(true)),
+        catchError((error) => this.handleError(error))
+      );
   }
 
   loadProducts(force = false): void {
@@ -85,13 +185,42 @@ export class CatalogApiService {
   private normalizeProducts(products: CatalogProduct[]): CatalogProduct[] {
     return products
       .filter((product) => product.isActive)
-      .map((product) => ({
-        ...product,
-        variants: product.variants
-          .filter((variant) => variant.isActive)
-          .sort((left, right) => left.name.localeCompare(right.name)),
-      }))
+      .map((product) => this.normalizeProduct(product))
       .sort((left, right) => left.name.localeCompare(right.name));
+  }
+
+  private normalizeProduct(product: CatalogProduct): CatalogProduct {
+    return {
+      ...product,
+      variants: this.normalizeVariants(product.variants),
+    };
+  }
+
+  private normalizeVariants(variants: CatalogProductVariant[]): CatalogProductVariant[] {
+    return variants
+      .filter((variant) => variant.isActive)
+      .sort((left, right) => left.name.localeCompare(right.name));
+  }
+
+  private upsertCachedProduct(product: CatalogProduct): void {
+    this.state.update((state) => ({
+      ...state,
+      products: this.normalizeProducts([
+        ...state.products.filter((candidate) => candidate.id !== product.id),
+        product,
+      ]),
+    }));
+  }
+
+  private removeCachedProduct(productId: string): void {
+    this.state.update((state) => ({
+      ...state,
+      products: state.products.filter((product) => product.id !== productId),
+    }));
+  }
+
+  private handleError(error: unknown): Observable<never> {
+    return throwError(() => new Error(this.getErrorMessage(error)));
   }
 
   private getErrorMessage(error: unknown): string {

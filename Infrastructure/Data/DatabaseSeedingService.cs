@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Shared.Constants;
 using System.Security.Claims;
+using Application.Common.Caching;
 using Infrastructure.Data.SeedData;
 using Application.Common.Interfaces;
 
@@ -28,7 +29,8 @@ namespace Infrastructure.Data
         ApplicationDbContext context,
         ILogger<DatabaseSeedingService> logger,
         UserManager<User> userManager,
-        RoleManager<Role> roleManager)
+        RoleManager<Role> roleManager,
+        IApplicationCache applicationCache)
     {
         public async Task InitializeMigrationAsync(bool isDevelopment)
         {
@@ -63,6 +65,8 @@ namespace Infrastructure.Data
                 await SeedAdminUserAsync();
                 await SeedCatalogAsync();
                 await SeedStoreNetworkAsync();
+                await applicationCache.InvalidateRegionAsync(CacheRegions.Catalog, CancellationToken.None);
+                await applicationCache.InvalidateRegionAsync(CacheRegions.Stores, CancellationToken.None);
             }
             catch (Exception ex)
             {
@@ -318,6 +322,67 @@ namespace Infrastructure.Data
             {
                 logger.LogInformation("Product variants skipped because all seeded variants already exist.");
             }
+
+            await RetireProductsOutsideClothingCatalogAsync(categorySeeds, productSeeds);
+        }
+
+        async Task RetireProductsOutsideClothingCatalogAsync(
+            IReadOnlyList<CategorySeed> categorySeeds,
+            IReadOnlyList<ProductSeed> productSeeds)
+        {
+            var seededCategorySlugs = categorySeeds
+                .Select(category => category.Slug)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var seededProductSkus = productSeeds
+                .Select(product => product.Sku)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var seededVariantSkus = productSeeds
+                .SelectMany(product => product.Variants.Select(variant => variant.Sku))
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            var retiredCount = 0;
+
+            foreach (var category in await context.Categories.Where(category => category.IsActive).ToListAsync())
+            {
+                if (seededCategorySlugs.Contains(category.Slug))
+                {
+                    continue;
+                }
+
+                category.SetActive(false);
+                retiredCount++;
+            }
+
+            foreach (var product in await context.Products.Where(product => product.IsActive).ToListAsync())
+            {
+                if (seededProductSkus.Contains(product.Sku))
+                {
+                    continue;
+                }
+
+                product.SetActive(false);
+                retiredCount++;
+            }
+
+            foreach (var variant in await context.ProductVariants.Where(variant => variant.IsActive).ToListAsync())
+            {
+                if (seededVariantSkus.Contains(variant.Sku))
+                {
+                    continue;
+                }
+
+                variant.SetActive(false);
+                retiredCount++;
+            }
+
+            if (retiredCount == 0)
+            {
+                logger.LogInformation("No non-clothing catalog records needed to be retired.");
+                return;
+            }
+
+            await context.SaveChangesAsync();
+            logger.LogInformation("Retired {retiredCount} non-clothing catalog record(s).", retiredCount);
         }
 
         async Task SeedStoreNetworkAsync()
@@ -325,31 +390,62 @@ namespace Infrastructure.Data
             var storesByCode = await context.Stores
                 .ToDictionaryAsync(store => store.Code, StringComparer.OrdinalIgnoreCase);
 
-            var storeSeed = StoreSeedData.Stores.Single();
-            var storeCode = storeSeed.Code;
+            var seededStores = new List<Store>();
+            var insertedStoreCount = 0;
+            var updatedStoreCount = 0;
 
-            if (!storesByCode.TryGetValue(storeCode, out var store))
+            foreach (var storeSeed in StoreSeedData.Stores)
             {
-                store = new Store(
-                    storeSeed.Code,
-                    storeSeed.Name,
-                    storeSeed.AddressLine1,
-                    storeSeed.City,
-                    storeSeed.State,
-                    storeSeed.Country,
-                    storeSeed.PostalCode,
-                    storeSeed.Latitude,
-                    storeSeed.Longitude,
-                    storeSeed.AddressLine2);
+                if (!storesByCode.TryGetValue(storeSeed.Code, out var store))
+                {
+                    store = new Store(
+                        storeSeed.Code,
+                        storeSeed.Name,
+                        storeSeed.AddressLine1,
+                        storeSeed.City,
+                        storeSeed.State,
+                        storeSeed.Country,
+                        storeSeed.PostalCode,
+                        storeSeed.Latitude,
+                        storeSeed.Longitude,
+                        storeSeed.AddressLine2);
 
-                await context.Stores.AddAsync(store);
+                    await context.Stores.AddAsync(store);
+                    storesByCode[storeSeed.Code] = store;
+                    insertedStoreCount++;
+                }
+                else
+                {
+                    store.UpdateDetails(
+                        storeSeed.Code,
+                        storeSeed.Name,
+                        storeSeed.AddressLine1,
+                        storeSeed.City,
+                        storeSeed.State,
+                        storeSeed.Country,
+                        storeSeed.PostalCode,
+                        storeSeed.Latitude,
+                        storeSeed.Longitude,
+                        storeSeed.AddressLine2);
+
+                    store.SetActive(true);
+                    updatedStoreCount++;
+                }
+
+                seededStores.Add(store);
+            }
+
+            if (insertedStoreCount > 0 || updatedStoreCount > 0)
+            {
                 await context.SaveChangesAsync();
-                storesByCode[storeCode] = store;
-                logger.LogInformation("Inserted store {storeName} in Ludhiana.", store.Name);
+                logger.LogInformation(
+                    "Seeded store network. Inserted {insertedStoreCount} store(s), updated {updatedStoreCount} store(s).",
+                    insertedStoreCount,
+                    updatedStoreCount);
             }
             else
             {
-                logger.LogInformation("Store {storeCode} skipped because it already exists.", storeCode);
+                logger.LogInformation("Store network skipped because all seeded stores already match the configured locations.");
             }
 
             var productsBySku = await context.Products
@@ -360,54 +456,62 @@ namespace Infrastructure.Data
                 .AsNoTracking()
                 .ToDictionaryAsync(variant => variant.Sku, StringComparer.OrdinalIgnoreCase);
 
-            var existingInventoryKeys = await context.InventoryItems
-                .AsNoTracking()
-                .Where(inventoryItem => inventoryItem.StoreId == store.Id)
-                .Select(inventoryItem => new InventorySeedKey(inventoryItem.ProductId, inventoryItem.ProductVariantId))
-                .ToListAsync();
-
-            var existingInventoryKeySet = existingInventoryKeys.ToHashSet();
             var newInventoryItems = new List<InventoryItem>();
-            var variantSequence = 0;
 
-            foreach (var productSeed in CatalogSeedData.Products)
+            for (var storeIndex = 0; storeIndex < seededStores.Count; storeIndex++)
             {
-                if (!productsBySku.TryGetValue(productSeed.Sku, out var product))
-                {
-                    throw new InvalidOperationException($"Cannot seed inventory because product '{productSeed.Sku}' does not exist.");
-                }
+                var store = seededStores[storeIndex];
+                var existingInventoryKeys = await context.InventoryItems
+                    .AsNoTracking()
+                    .Where(inventoryItem => inventoryItem.StoreId == store.Id)
+                    .Select(inventoryItem => new InventorySeedKey(inventoryItem.ProductId, inventoryItem.ProductVariantId))
+                    .ToListAsync();
 
-                if (productSeed.Variants.Count == 0)
-                {
-                    var inventoryKey = new InventorySeedKey(product.Id, null);
+                var existingInventoryKeySet = existingInventoryKeys.ToHashSet();
+                var variantSequence = 0;
 
-                    if (!existingInventoryKeySet.Contains(inventoryKey))
+                foreach (var productSeed in CatalogSeedData.Products)
+                {
+                    if (!productsBySku.TryGetValue(productSeed.Sku, out var product))
                     {
-                        newInventoryItems.Add(new InventoryItem(store.Id, product.Id, null, 18, 4));
-                        existingInventoryKeySet.Add(inventoryKey);
+                        throw new InvalidOperationException($"Cannot seed inventory because product '{productSeed.Sku}' does not exist.");
                     }
 
-                    continue;
-                }
-
-                foreach (var variantSeed in productSeed.Variants)
-                {
-                    if (!variantsBySku.TryGetValue(variantSeed.Sku, out var variant))
+                    if (productSeed.Variants.Count == 0)
                     {
-                        throw new InvalidOperationException($"Cannot seed inventory because product variant '{variantSeed.Sku}' does not exist.");
-                    }
+                        var inventoryKey = new InventorySeedKey(product.Id, null);
 
-                    var inventoryKey = new InventorySeedKey(product.Id, variant.Id);
+                        if (!existingInventoryKeySet.Contains(inventoryKey))
+                        {
+                            var quantityOnHand = CalculateSeedQuantity(storeIndex, variantSequence);
+                            newInventoryItems.Add(new InventoryItem(store.Id, product.Id, null, quantityOnHand, 4));
+                            existingInventoryKeySet.Add(inventoryKey);
+                        }
 
-                    if (existingInventoryKeySet.Contains(inventoryKey))
-                    {
+                        variantSequence++;
                         continue;
                     }
 
-                    var quantityOnHand = 10 + ((variantSequence % 5) * 4);
-                    newInventoryItems.Add(new InventoryItem(store.Id, product.Id, variant.Id, quantityOnHand, 3));
-                    existingInventoryKeySet.Add(inventoryKey);
-                    variantSequence++;
+                    foreach (var variantSeed in productSeed.Variants)
+                    {
+                        if (!variantsBySku.TryGetValue(variantSeed.Sku, out var variant))
+                        {
+                            throw new InvalidOperationException($"Cannot seed inventory because product variant '{variantSeed.Sku}' does not exist.");
+                        }
+
+                        var inventoryKey = new InventorySeedKey(product.Id, variant.Id);
+
+                        if (existingInventoryKeySet.Contains(inventoryKey))
+                        {
+                            variantSequence++;
+                            continue;
+                        }
+
+                        var quantityOnHand = CalculateSeedQuantity(storeIndex, variantSequence);
+                        newInventoryItems.Add(new InventoryItem(store.Id, product.Id, variant.Id, quantityOnHand, 3));
+                        existingInventoryKeySet.Add(inventoryKey);
+                        variantSequence++;
+                    }
                 }
             }
 
@@ -415,12 +519,20 @@ namespace Infrastructure.Data
             {
                 await context.InventoryItems.AddRangeAsync(newInventoryItems);
                 await context.SaveChangesAsync();
-                logger.LogInformation("Inserted {inventoryCount} inventory records for store {storeName}.", newInventoryItems.Count, store.Name);
+                logger.LogInformation(
+                    "Inserted {inventoryCount} inventory records across {storeCount} store location(s).",
+                    newInventoryItems.Count,
+                    seededStores.Count);
             }
             else
             {
-                logger.LogInformation("Inventory skipped for store {storeName} because all seeded records already exist.", store.Name);
+                logger.LogInformation("Inventory skipped because all seeded store and clothing variant records already exist.");
             }
+        }
+
+        static int CalculateSeedQuantity(int storeIndex, int variantSequence)
+        {
+            return 8 + ((storeIndex + 1) * 3) + ((variantSequence % 6) * 2);
         }
 
         static string CreatePlaceholderImageUrl(string text, string backgroundColor, int width, int height)

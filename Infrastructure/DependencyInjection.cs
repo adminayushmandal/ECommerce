@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Infrastructure
 {
@@ -14,7 +15,17 @@ namespace Infrastructure
     {
         public static void AddInfrastructure(this IHostApplicationBuilder builder, string connectionString)
         {
+            builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventInterceptor>();
             builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
+            builder.Services.AddOptions<PayPalSdkOptions>()
+                .Bind(builder.Configuration.GetSection(PayPalSdkOptions.SectionName))
+                .Validate(options => !string.IsNullOrWhiteSpace(options.ClientId), "PayPal client id is required.")
+                .Validate(options => !string.IsNullOrWhiteSpace(options.ClientSecret), "PayPal client secret is required.")
+                .Validate(options => !string.IsNullOrWhiteSpace(options.CurrencyCode) && options.CurrencyCode.Length == 3, "PayPal currency code must be a three-letter ISO code.")
+                .ValidateOnStart();
+
+            builder.Services.AddSingleton(provider =>
+                PayPalCheckoutGateway.CreateClient(provider.GetRequiredService<IOptions<PayPalSdkOptions>>().Value));
             builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
             {
                 options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
@@ -30,6 +41,8 @@ namespace Infrastructure
             builder.Services.AddScoped<IInventoryItemRepository, InventoryItemRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
             builder.Services.AddScoped<IIdentityService, IdentityService>();
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IPayPalCheckoutGateway, PayPalCheckoutGateway>();
             builder.Services.AddScoped<IProductVectorIndexingService, ProductVectorIndexingService>();
             builder.Services.AddHostedService<ProductVectorSyncHostedService>();
 

@@ -1,36 +1,38 @@
 @if (sessionLoading() && !currentUser()) {
   <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
     <div class="space-y-5">
-      <div class="h-48 animate-pulse rounded-[2rem] bg-white/80"></div>
+      <p-skeleton width="100%" height="12rem" borderRadius="2rem"></p-skeleton>
       <div class="grid gap-5 md:grid-cols-2">
-        <div class="h-72 animate-pulse rounded-[1.8rem] bg-white/80"></div>
-        <div class="h-72 animate-pulse rounded-[1.8rem] bg-white/80"></div>
+        <p-skeleton width="100%" height="18rem" borderRadius="1.8rem"></p-skeleton>
+        <p-skeleton width="100%" height="18rem" borderRadius="1.8rem"></p-skeleton>
       </div>
     </div>
-    <div class="h-80 animate-pulse rounded-[1.8rem] bg-white/80"></div>
+    <p-skeleton width="100%" height="20rem" borderRadius="1.8rem"></p-skeleton>
   </section>
 } @else if (!isAuthenticated() || !currentUser()) {
-  <section class="rounded-[2rem] border border-dashed border-slate-300 bg-white/90 px-6 py-10 text-center">
-    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">Account access</p>
-    <h1 class="mt-3 text-3xl font-semibold tracking-tight text-slate-950">Sign in to view your profile.</h1>
-    <p class="mt-3 max-w-2xl mx-auto text-sm leading-6 text-slate-500">
+  <section class="rounded-lg border border-dashed border-neutral-300 bg-white/90 px-6 py-10 text-center">
+    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-neutral-400">Account access</p>
+    <h1 class="mt-3 text-3xl font-semibold tracking-tight text-neutral-950">Sign in to view your profile.</h1>
+    <p class="mt-3 max-w-2xl mx-auto text-sm leading-6 text-neutral-500">
       Your account profile, confirmation status, and preference settings become available only after the authenticated session is active.
     </p>
     <a
+      pButton
       routerLink="/identity/login"
       [queryParams]="{ redirectTo: '/account/profile' }"
-      class="mt-6 inline-flex rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
-    >
-      Sign in now
-    </a>
+      icon="pi pi-sign-in"
+      label="Sign in now"
+      severity="contrast"
+      class="mt-6"
+    ></a>
   </section>
 } @else if (currentUser(); as user) {
   <section class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_21rem]">
     <div class="space-y-6">
-      <section class="rounded-[2.2rem] border border-white/80 bg-[linear-gradient(135deg,#0f172a_0%,#0f766e_60%,#f59e0b_145%)] px-6 py-7 text-white shadow-[0_28px_80px_rgba(15,23,42,0.18)] sm:px-8">
+      <section class="rounded-lg border border-white/80 bg-[linear-gradient(135deg,#171717_0%,#2f2f2f_62%,#b85532_145%)] px-6 py-7 text-white shadow-[0_28px_80px_rgba(23,23,23,0.18)] sm:px-8">
         <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div class="flex items-start gap-4">
-            <span class="inline-flex h-20 w-20 items-center justify-center rounded-[1.8rem] bg-white/12 text-2xl font-semibold text-white shadow-[0_16px_38px_rgba(15,23,42,0.18)]">
+            <span class="inline-flex h-20 w-20 items-center justify-center rounded-lg bg-white/12 text-2xl font-semibold text-white shadow-[0_16px_38px_rgba(15,23,42,0.18)]">
               {{ getUserInitials() }}
             </span>
             <div>
@@ -39,9 +41,7 @@
               <p class="mt-2 text-sm leading-6 text-white/78">{{ user.email }}</p>
               <div class="mt-4 flex flex-wrap gap-2">
                 @for (role of user.roles; track role) {
-                  <span class="rounded-full border border-white/14 bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em] text-white/84">
-                    {{ role }}
-                  </span>
+                  <p-tag [value]="role" severity="secondary" [rounded]="true"></p-tag>
                 }
               </div>
             </div>
@@ -49,115 +49,187 @@
 
           <div class="grid gap-3 sm:grid-cols-1">
             <a
+              pButton
               routerLink="/"
-              class="inline-flex items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-medium text-slate-950 transition hover:bg-emerald-50"
-            >
-              Back to store
-            </a>
+              icon="pi pi-arrow-left"
+              label="Back to store"
+              severity="secondary"
+            ></a>
           </div>
         </div>
       </section>
 
       <div class="grid gap-5 xl:grid-cols-2">
-        <section class="rounded-[1.9rem] border border-slate-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Account details</p>
+        <section class="rounded-lg border border-neutral-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Account details</p>
           <div class="mt-5 space-y-4">
-            <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-              <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Display name</p>
-              <p class="mt-2 text-lg font-semibold text-slate-950">{{ user.displayName }}</p>
+            <div class="rounded-md bg-neutral-50 px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.24em] text-neutral-400">Display name</p>
+              <p class="mt-2 text-lg font-semibold text-neutral-950">{{ user.displayName }}</p>
             </div>
-            <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-              <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Email</p>
-              <p class="mt-2 text-lg font-semibold text-slate-950">{{ user.email }}</p>
+            <div class="rounded-md bg-neutral-50 px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.24em] text-neutral-400">Email</p>
+              <p class="mt-2 text-lg font-semibold text-neutral-950">{{ user.email }}</p>
             </div>
-            <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-              <p class="text-xs uppercase tracking-[0.24em] text-slate-400">Phone number</p>
-              <p class="mt-2 text-lg font-semibold text-slate-950">{{ user.phoneNumber || 'Not added yet' }}</p>
+            <div class="rounded-md bg-neutral-50 px-4 py-4">
+              <p class="text-xs uppercase tracking-[0.24em] text-neutral-400">Phone number</p>
+              <p class="mt-2 text-lg font-semibold text-neutral-950">{{ user.phoneNumber || 'Not added yet' }}</p>
             </div>
           </div>
         </section>
 
-        <section class="rounded-[1.9rem] border border-slate-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Security and status</p>
+        <section class="rounded-lg border border-neutral-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Security and status</p>
           <div class="mt-5 grid gap-4">
-            <article class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4">
+            <article class="rounded-md border border-neutral-200 bg-white px-4 py-4">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="text-sm font-semibold text-slate-950">Email confirmation</p>
-                  <p class="mt-1 text-sm leading-6 text-slate-500">Account verification for secure sign-in communication.</p>
+                  <p class="text-sm font-semibold text-neutral-950">Email confirmation</p>
+                  <p class="mt-1 text-sm leading-6 text-neutral-500">Account verification for secure sign-in communication.</p>
                 </div>
-                <span class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em]" [class.bg-emerald-100]="user.emailConfirmed" [class.text-emerald-900]="user.emailConfirmed" [class.bg-amber-100]="!user.emailConfirmed" [class.text-amber-900]="!user.emailConfirmed">
-                  {{ user.emailConfirmed ? 'Verified' : 'Pending' }}
-                </span>
+                <p-tag [value]="user.emailConfirmed ? 'Verified' : 'Pending'" [severity]="user.emailConfirmed ? 'success' : 'warn'" [rounded]="true"></p-tag>
               </div>
             </article>
 
-            <article class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4">
+            <article class="rounded-md border border-neutral-200 bg-white px-4 py-4">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="text-sm font-semibold text-slate-950">Phone confirmation</p>
-                  <p class="mt-1 text-sm leading-6 text-slate-500">Verification used for optional customer contact and recovery flows.</p>
+                  <p class="text-sm font-semibold text-neutral-950">Phone confirmation</p>
+                  <p class="mt-1 text-sm leading-6 text-neutral-500">Verification used for optional customer contact and recovery flows.</p>
                 </div>
-                <span class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em]" [class.bg-emerald-100]="user.phoneNumberConfirmed" [class.text-emerald-900]="user.phoneNumberConfirmed" [class.bg-slate-100]="!user.phoneNumberConfirmed" [class.text-slate-700]="!user.phoneNumberConfirmed">
-                  {{ user.phoneNumberConfirmed ? 'Confirmed' : 'Not confirmed' }}
-                </span>
+                <p-tag [value]="user.phoneNumberConfirmed ? 'Confirmed' : 'Not confirmed'" [severity]="user.phoneNumberConfirmed ? 'success' : 'secondary'" [rounded]="true"></p-tag>
               </div>
             </article>
 
-            <article class="rounded-[1.4rem] border border-slate-200 bg-white px-4 py-4">
+            <article class="rounded-md border border-neutral-200 bg-white px-4 py-4">
               <div class="flex items-center justify-between gap-4">
                 <div>
-                  <p class="text-sm font-semibold text-slate-950">Account state</p>
-                  <p class="mt-1 text-sm leading-6 text-slate-500">Profile activation status from the backend identity system.</p>
+                  <p class="text-sm font-semibold text-neutral-950">Account state</p>
+                  <p class="mt-1 text-sm leading-6 text-neutral-500">Profile activation status from the backend identity system.</p>
                 </div>
-                <span class="rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.22em]" [class.bg-emerald-100]="user.isActive" [class.text-emerald-900]="user.isActive" [class.bg-red-100]="!user.isActive" [class.text-red-900]="!user.isActive">
-                  {{ user.isActive ? 'Active' : 'Inactive' }}
-                </span>
+                <p-tag [value]="user.isActive ? 'Active' : 'Inactive'" [severity]="user.isActive ? 'success' : 'danger'" [rounded]="true"></p-tag>
               </div>
             </article>
           </div>
         </section>
       </div>
 
-      <section class="rounded-[1.9rem] border border-slate-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+      <section class="rounded-lg border border-neutral-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Order history</p>
+            <h2 class="mt-2 text-2xl font-semibold tracking-tight text-neutral-950">My orders</h2>
+            <p class="mt-2 text-sm leading-6 text-neutral-500">
+              {{ orderSummary().count }} {{ orderSummary().count === 1 ? 'order' : 'orders' }} placed from this account.
+            </p>
+          </div>
+
+          <button
+            pButton
+            type="button"
+            (click)="refreshOrders()"
+            [disabled]="ordersLoading()"
+            [loading]="ordersLoading()"
+            icon="pi pi-refresh"
+            label="Refresh orders"
+            severity="secondary"
+            [outlined]="true"
+          ></button>
+        </div>
+
+        @if (ordersLoading() && orders().length === 0) {
+          <div class="mt-6 grid gap-4">
+            @for (item of [1, 2, 3]; track item) {
+              <div class="h-32 animate-pulse rounded-md bg-neutral-100"></div>
+            }
+          </div>
+        } @else if (ordersError()) {
+          <div class="mt-6 rounded-md border border-red-200 bg-red-50 px-5 py-5">
+            <p class="text-sm font-semibold text-red-900">Orders could not be loaded.</p>
+            <p class="mt-2 text-sm leading-6 text-red-700">{{ ordersError() }}</p>
+          </div>
+        } @else if (orders().length === 0) {
+          <div class="mt-6 rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-5 py-8 text-center">
+            <p class="text-sm font-semibold text-neutral-950">No orders yet</p>
+            <p class="mt-2 text-sm leading-6 text-neutral-500">Completed PayPal checkouts will appear here after capture.</p>
+          </div>
+        } @else {
+          <div class="mt-6 grid gap-4">
+            @for (order of orders(); track order.id) {
+              <article class="rounded-md border border-neutral-200 bg-white px-4 py-4">
+                <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3 class="text-lg font-semibold tracking-tight text-neutral-950">{{ order.orderNumber }}</h3>
+                      <p-tag [value]="formatOrderStatus(order.status)" severity="success" [rounded]="true"></p-tag>
+                    </div>
+                    <p class="mt-2 text-sm leading-6 text-neutral-500">
+                      {{ formatOrderDate(order.createdAt) }} / {{ getOrderItemSummary(order) }} / {{ order.allocatedStoreName || 'Store allocation pending' }}
+                    </p>
+                  </div>
+
+                  <div class="text-left lg:text-right">
+                    <p class="text-xs uppercase tracking-[0.22em] text-neutral-400">Total</p>
+                    <p class="mt-1 text-2xl font-semibold text-neutral-950">{{ formatCurrency(order.totalAmount) }}</p>
+                  </div>
+                </div>
+
+                <div class="mt-4 divide-y divide-neutral-100 rounded-md bg-neutral-50 px-4">
+                  @for (item of order.items; track item.id) {
+                    <div class="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div>
+                        <p class="text-sm font-semibold text-neutral-950">{{ item.productName }}</p>
+                        <p class="mt-1 text-xs leading-5 text-neutral-500">{{ item.variantName || 'Standard' }} / Qty {{ item.quantity }}</p>
+                      </div>
+                      <p class="text-sm font-semibold text-neutral-900">{{ formatCurrency(item.lineTotal) }}</p>
+                    </div>
+                  }
+                </div>
+              </article>
+            }
+          </div>
+        }
+      </section>
+
+      <section class="rounded-lg border border-neutral-200 bg-white/92 p-6 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
         <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Storefront settings</p>
-            <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">Personal preferences</h2>
-            <p class="mt-2 text-sm leading-6 text-slate-500">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Storefront settings</p>
+            <h2 class="mt-2 text-2xl font-semibold tracking-tight text-neutral-950">Personal preferences</h2>
+            <p class="mt-2 text-sm leading-6 text-neutral-500">
               These preferences are saved locally for this browser right now. They shape the storefront experience without requiring backend profile update APIs.
             </p>
           </div>
         </div>
 
         <div class="mt-6 grid gap-4 md:grid-cols-3">
-          <label class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
+          <label class="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-4">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-sm font-semibold text-slate-950">Order updates</p>
-                <p class="mt-2 text-sm leading-6 text-slate-500">Keep this browser ready to show order-related status notices.</p>
+                <p class="text-sm font-semibold text-neutral-950">Order updates</p>
+                <p class="mt-2 text-sm leading-6 text-neutral-500">Keep this browser ready to show order-related status notices.</p>
               </div>
-              <input type="checkbox" [checked]="preferences().orderUpdates" (change)="updatePreference('orderUpdates', $event)" class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-700 focus:ring-emerald-500" />
+              <p-toggleswitch [ngModel]="preferences().orderUpdates" (onChange)="updatePreferenceValue('orderUpdates', $event.checked)"></p-toggleswitch>
             </div>
           </label>
 
-          <label class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
+          <label class="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-4">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-sm font-semibold text-slate-950">Wish list alerts</p>
-                <p class="mt-2 text-sm leading-6 text-slate-500">Keep discovery prompts and saved-item reminders available on this device.</p>
+                <p class="text-sm font-semibold text-neutral-950">Wish list alerts</p>
+                <p class="mt-2 text-sm leading-6 text-neutral-500">Keep discovery prompts and saved-item reminders available on this device.</p>
               </div>
-              <input type="checkbox" [checked]="preferences().wishListAlerts" (change)="updatePreference('wishListAlerts', $event)" class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-700 focus:ring-emerald-500" />
+              <p-toggleswitch [ngModel]="preferences().wishListAlerts" (onChange)="updatePreferenceValue('wishListAlerts', $event.checked)"></p-toggleswitch>
             </div>
           </label>
 
-          <label class="rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-4">
+          <label class="rounded-md border border-neutral-200 bg-neutral-50 px-4 py-4">
             <div class="flex items-start justify-between gap-4">
               <div>
-                <p class="text-sm font-semibold text-slate-950">Restock notices</p>
-                <p class="mt-2 text-sm leading-6 text-slate-500">Show prompts for items you may want to revisit when they return.</p>
+                <p class="text-sm font-semibold text-neutral-950">Restock notices</p>
+                <p class="mt-2 text-sm leading-6 text-neutral-500">Show prompts for items you may want to revisit when they return.</p>
               </div>
-              <input type="checkbox" [checked]="preferences().restockNotices" (change)="updatePreference('restockNotices', $event)" class="mt-1 h-5 w-5 rounded border-slate-300 text-emerald-700 focus:ring-emerald-500" />
+              <p-toggleswitch [ngModel]="preferences().restockNotices" (onChange)="updatePreferenceValue('restockNotices', $event.checked)"></p-toggleswitch>
             </div>
           </label>
         </div>
@@ -165,37 +237,48 @@
     </div>
 
     <aside class="space-y-5">
-      <section class="rounded-[1.9rem] border border-slate-200 bg-white/92 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Shopping summary</p>
+      <section class="rounded-lg border border-neutral-200 bg-white/92 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Shopping summary</p>
         <div class="mt-4 space-y-3">
-          <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-            <p class="text-xs uppercase tracking-[0.22em] text-slate-400">Items in current cart</p>
-            <p class="mt-2 text-3xl font-semibold text-slate-950">{{ cartSnapshot().itemCount }}</p>
+          <div class="rounded-md bg-neutral-50 px-4 py-4">
+            <p class="text-xs uppercase tracking-[0.22em] text-neutral-400">Items in current cart</p>
+            <p class="mt-2 text-3xl font-semibold text-neutral-950">{{ cartSnapshot().itemCount }}</p>
           </div>
-          <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-            <p class="text-xs uppercase tracking-[0.22em] text-slate-400">Current subtotal</p>
-            <p class="mt-2 text-3xl font-semibold text-slate-950">{{ formatCurrency(cartSnapshot().subtotal) }}</p>
+          <div class="rounded-md bg-neutral-50 px-4 py-4">
+            <p class="text-xs uppercase tracking-[0.22em] text-neutral-400">Current subtotal</p>
+            <p class="mt-2 text-3xl font-semibold text-neutral-950">{{ formatCurrency(cartSnapshot().subtotal) }}</p>
+          </div>
+          <div class="rounded-md bg-neutral-50 px-4 py-4">
+            <p class="text-xs uppercase tracking-[0.22em] text-neutral-400">Orders placed</p>
+            <p class="mt-2 text-3xl font-semibold text-neutral-950">{{ orderSummary().count }}</p>
+          </div>
+          <div class="rounded-md bg-neutral-50 px-4 py-4">
+            <p class="text-xs uppercase tracking-[0.22em] text-neutral-400">Order total</p>
+            <p class="mt-2 text-3xl font-semibold text-neutral-950">{{ formatCurrency(orderSummary().totalSpend) }}</p>
           </div>
         </div>
       </section>
 
-      <section class="rounded-[1.9rem] border border-emerald-200 bg-[linear-gradient(180deg,#f0fdf4_0%,#ecfeff_100%)] p-5 shadow-[0_18px_50px_rgba(16,185,129,0.09)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-700">Account actions</p>
+      <section class="rounded-lg border border-neutral-200 bg-[linear-gradient(180deg,#ffffff_0%,#eeeeeb_100%)] p-5 shadow-[0_18px_50px_rgba(23,23,23,0.09)]">
+        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-700">Account actions</p>
         <div class="mt-4 grid gap-3">
           <a
+            pButton
             routerLink="/"
-            class="inline-flex items-center justify-center rounded-full bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-emerald-900"
-          >
-            Continue shopping
-          </a>
+            icon="pi pi-shopping-bag"
+            label="Continue shopping"
+            severity="contrast"
+          ></a>
 
           <button
+            pButton
             type="button"
             (click)="signOut()"
-            class="inline-flex items-center justify-center rounded-full border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
-          >
-            Sign out from this session
-          </button>
+            icon="pi pi-sign-out"
+            label="Sign out from this session"
+            severity="secondary"
+            [outlined]="true"
+          ></button>
         </div>
       </section>
     </aside>

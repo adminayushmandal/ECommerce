@@ -11,6 +11,7 @@ internal sealed class ProductVariantRepository(ApplicationDbContext dbContext) :
         return await dbContext.ProductVariants
             .AsNoTracking()
             .Include(productVariant => productVariant.Product)
+            .ThenInclude(product => product.Category)
             .Where(productVariant => productVariant.ProductId == productId)
             .OrderBy(productVariant => productVariant.Name)
             .ToListAsync(cancellationToken);
@@ -20,6 +21,7 @@ internal sealed class ProductVariantRepository(ApplicationDbContext dbContext) :
     {
         return dbContext.ProductVariants
             .Include(productVariant => productVariant.Product)
+            .ThenInclude(product => product.Category)
             .FirstOrDefaultAsync(productVariant => productVariant.Id == productVariantId, cancellationToken);
     }
 
@@ -27,6 +29,7 @@ internal sealed class ProductVariantRepository(ApplicationDbContext dbContext) :
     {
         return dbContext.ProductVariants
             .Include(productVariant => productVariant.Product)
+            .ThenInclude(product => product.Category)
             .FirstOrDefaultAsync(
                 productVariant => productVariant.ProductId == productId && productVariant.Id == productVariantId,
                 cancellationToken);

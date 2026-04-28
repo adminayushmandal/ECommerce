@@ -1,8 +1,10 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace Application.Features.Stores.Queries;
 
@@ -15,13 +17,38 @@ public sealed record GetProductStoreAvailabilityQuery(
 public sealed class GetProductStoreAvailabilityQueryHandler(
     IApplicationDbContext applicationDbContext,
     IProductRepository productRepository,
-    IProductVariantRepository productVariantRepository)
+    IProductVariantRepository productVariantRepository,
+    IApplicationCache applicationCache)
     : IRequestHandler<GetProductStoreAvailabilityQuery, IReadOnlyList<ProductStoreAvailabilityDto>>
 {
     public async Task<IReadOnlyList<ProductStoreAvailabilityDto>> Handle(GetProductStoreAvailabilityQuery request, CancellationToken cancellationToken)
     {
-        _ = await productRepository.GetByIdAsync(request.ProductId, cancellationToken)
+        var roundedLatitude = request.CustomerLatitude.HasValue
+            ? Math.Round(request.CustomerLatitude.Value, 4, MidpointRounding.AwayFromZero).ToString("F4", CultureInfo.InvariantCulture)
+            : "none";
+        var roundedLongitude = request.CustomerLongitude.HasValue
+            ? Math.Round(request.CustomerLongitude.Value, 4, MidpointRounding.AwayFromZero).ToString("F4", CultureInfo.InvariantCulture)
+            : "none";
+
+        return await applicationCache.GetOrCreateAsync(
+            CacheRegions.Catalog,
+            $"availability:product:{request.ProductId}:variant:{request.ProductVariantId ?? "none"}:lat:{roundedLatitude}:lon:{roundedLongitude}",
+            CacheDurations.ProductAvailability,
+            token => GetAvailabilityAsync(request, token),
+            cancellationToken);
+    }
+
+    private async Task<ProductStoreAvailabilityDto[]> GetAvailabilityAsync(
+        GetProductStoreAvailabilityQuery request,
+        CancellationToken cancellationToken)
+    {
+        var product = await productRepository.GetByIdAsync(request.ProductId, cancellationToken)
             ?? throw new ProductNotFoundException(request.ProductId);
+
+        if (!product.IsActive || !product.Category.IsActive)
+        {
+            throw new ProductNotFoundException(request.ProductId);
+        }
 
         if (!string.IsNullOrWhiteSpace(request.ProductVariantId))
         {
@@ -34,6 +61,9 @@ public sealed class GetProductStoreAvailabilityQueryHandler(
             .Include(inventoryItem => inventoryItem.Store)
             .Where(inventoryItem =>
                 inventoryItem.ProductId == request.ProductId &&
+                inventoryItem.Product.IsActive &&
+                inventoryItem.Product.Category.IsActive &&
+                (inventoryItem.ProductVariantId == null || inventoryItem.ProductVariant!.IsActive) &&
                 inventoryItem.Store.IsActive);
 
         if (!string.IsNullOrWhiteSpace(request.ProductVariantId))

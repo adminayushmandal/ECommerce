@@ -1,22 +1,42 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using MediatR;
+using System.Globalization;
 
 namespace Application.Features.Stores.Queries;
 
 public sealed record GetNearestStoreQuery(double CustomerLatitude, double CustomerLongitude) : IRequest<NearestStoreDto>;
 
-public sealed class GetNearestStoreQueryHandler(IStoreRepository storeRepository)
+public sealed class GetNearestStoreQueryHandler(
+    IStoreRepository storeRepository,
+    IApplicationCache applicationCache)
     : IRequestHandler<GetNearestStoreQuery, NearestStoreDto>
 {
     public async Task<NearestStoreDto> Handle(GetNearestStoreQuery request, CancellationToken cancellationToken)
     {
+        var roundedLatitude = Math.Round(request.CustomerLatitude, 4, MidpointRounding.AwayFromZero);
+        var roundedLongitude = Math.Round(request.CustomerLongitude, 4, MidpointRounding.AwayFromZero);
+
+        return await applicationCache.GetOrCreateAsync(
+            CacheRegions.Stores,
+            $"stores:nearest:{roundedLatitude.ToString("F4", CultureInfo.InvariantCulture)}:{roundedLongitude.ToString("F4", CultureInfo.InvariantCulture)}",
+            CacheDurations.NearestStore,
+            token => ResolveNearestStoreAsync(request.CustomerLatitude, request.CustomerLongitude, token),
+            cancellationToken);
+    }
+
+    private async Task<NearestStoreDto> ResolveNearestStoreAsync(
+        double customerLatitude,
+        double customerLongitude,
+        CancellationToken cancellationToken)
+    {
         var store = (await storeRepository.GetAllAsync(cancellationToken))
             .Where(candidate => candidate.IsActive)
             .OrderBy(candidate => CalculateDistanceKilometers(
-                request.CustomerLatitude,
-                request.CustomerLongitude,
+                customerLatitude,
+                customerLongitude,
                 candidate.Latitude,
                 candidate.Longitude))
             .ThenBy(candidate => candidate.Name)
@@ -42,8 +62,8 @@ public sealed class GetNearestStoreQueryHandler(IStoreRepository storeRepository
             store.IsActive,
             Math.Round(
                 CalculateDistanceKilometers(
-                    request.CustomerLatitude,
-                    request.CustomerLongitude,
+                    customerLatitude,
+                    customerLongitude,
                     store.Latitude,
                     store.Longitude),
                 2,

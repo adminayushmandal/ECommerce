@@ -1,0 +1,255 @@
+<section class="manager-dashboard">
+  @if (sessionLoading() && !currentUser()) {
+    <div class="manager-loading">
+      <p-skeleton width="14rem" height="3rem"></p-skeleton>
+      <p-skeleton width="100%" height="18rem"></p-skeleton>
+    </div>
+  } @else if (!isAuthenticated()) {
+    <section class="manager-access-state">
+      <p class="manager-eyebrow">Store manager</p>
+      <h1>Sign in required</h1>
+      <a pButton routerLink="/identity/login" [queryParams]="{ redirectTo: '/manager/dashboard' }" label="Sign in" severity="contrast"></a>
+    </section>
+  } @else if (!canAccessManagerDashboard()) {
+    <section class="manager-access-state">
+      <p class="manager-eyebrow">Store manager</p>
+      <h1>Permission required</h1>
+      <p>StoreManager or Administrator access is required.</p>
+      <a pButton routerLink="/account/profile" label="Back to account" severity="secondary" [outlined]="true"></a>
+    </section>
+  } @else {
+    <header class="manager-hero">
+      <div>
+        <p class="manager-eyebrow">Store manager</p>
+        <h1>Dashboard</h1>
+        <p>{{ selectedStoreName() }}</p>
+      </div>
+
+      <div class="manager-toolbar">
+        <label>
+          <span>Store</span>
+          <select [value]="selectedStoreId()" (change)="onStoreChange($event)">
+            <option value="">All stores</option>
+            @for (store of stores(); track store.id) {
+              <option [value]="store.id">{{ store.name }}</option>
+            }
+          </select>
+        </label>
+
+        <button
+          pButton
+          type="button"
+          icon="pi pi-refresh"
+          label="Refresh"
+          severity="secondary"
+          [outlined]="true"
+          [loading]="loading() || productsLoading() || paymentsLoading()"
+          (click)="refreshDashboard()"
+        ></button>
+      </div>
+    </header>
+
+    @if (error()) {
+      <div class="manager-alert">
+        <i class="pi pi-exclamation-triangle"></i>
+        <span>{{ error() }}</span>
+      </div>
+    }
+
+    <section class="manager-metrics" aria-label="Manager summary">
+      <article>
+        <span>Products</span>
+        <strong>{{ managerMetrics().activeProducts }}</strong>
+      </article>
+      <article>
+        <span>Variants</span>
+        <strong>{{ managerMetrics().variantCount }}</strong>
+      </article>
+      <article>
+        <span>Available units</span>
+        <strong>{{ managerMetrics().availableUnits }}</strong>
+      </article>
+      <article>
+        <span>Captured revenue</span>
+        <strong>{{ formatCurrency(managerMetrics().capturedRevenue) }}</strong>
+      </article>
+    </section>
+
+    <section class="manager-grid">
+      <article class="manager-panel manager-panel--products">
+        <header class="manager-panel__header">
+          <div>
+            <p class="manager-eyebrow">Catalog</p>
+            <h2>Products</h2>
+          </div>
+
+          <button pButton type="button" icon="pi pi-plus" label="New" severity="contrast" (click)="startNewProduct()"></button>
+        </header>
+
+        <label class="manager-search">
+          <i class="pi pi-search"></i>
+          <input type="search" [value]="productSearch()" placeholder="Search products" (input)="onProductSearch($event)" />
+        </label>
+
+        <div class="manager-product-list">
+          @if (productsLoading()) {
+            @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+              <p-skeleton width="100%" height="4.75rem"></p-skeleton>
+            }
+          } @else if (filteredProducts().length === 0) {
+            <div class="manager-empty-state">
+              <strong>No products</strong>
+            </div>
+          } @else {
+            @for (product of filteredProducts(); track product.id) {
+              <button
+                type="button"
+                class="manager-product-row"
+                [class.manager-product-row--active]="selectedProductId() === product.id"
+                (click)="selectProduct(product)"
+              >
+                <span class="manager-product-row__visual" [style.background]="getProductBackground(product)"></span>
+                <span>
+                  <strong>{{ product.name }}</strong>
+                  <small>{{ product.sku }} / {{ product.categoryName }}</small>
+                </span>
+                <em>{{ product.availableQuantity ?? product.variants.length }}</em>
+              </button>
+            }
+          }
+        </div>
+      </article>
+
+      <article class="manager-panel">
+        <header class="manager-panel__header">
+          <div>
+            <p class="manager-eyebrow">Product control</p>
+            <h2>{{ productForm.controls.id.value ? 'Edit product' : 'New product' }}</h2>
+          </div>
+
+          @if (selectedProduct(); as product) {
+            <p-tag [value]="product.isActive ? 'Active' : 'Inactive'" [severity]="product.isActive ? 'success' : 'secondary'"></p-tag>
+          }
+        </header>
+
+        <form class="manager-product-form" [formGroup]="productForm" (ngSubmit)="saveProduct()">
+          <label>
+            <span>Category</span>
+            <select formControlName="categoryId">
+              @for (category of categoryOptions(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            <span>Product name</span>
+            <input type="text" formControlName="name" (input)="syncSlugFromName()" />
+          </label>
+
+          <div class="manager-form-grid">
+            <label>
+              <span>SKU</span>
+              <input type="text" formControlName="sku" />
+            </label>
+
+            <label>
+              <span>Slug</span>
+              <input type="text" formControlName="slug" />
+            </label>
+          </div>
+
+          <label>
+            <span>Description</span>
+            <textarea rows="4" formControlName="description"></textarea>
+          </label>
+
+          <div class="manager-form-grid">
+            <label>
+              <span>Base price</span>
+              <input type="number" min="0" step="0.01" formControlName="basePrice" />
+            </label>
+
+            <label>
+              <span>Visual color or image</span>
+              <input type="text" formControlName="imageUrl" />
+            </label>
+          </div>
+
+          <label class="manager-check">
+            <input type="checkbox" formControlName="isActive" />
+            <span>Active in catalog</span>
+          </label>
+
+          @if (selectedProduct(); as product) {
+            <div class="manager-variant-strip" aria-label="Product variants">
+              @for (variant of product.variants; track variant.id) {
+                <span>{{ variant.name }}</span>
+              }
+            </div>
+          }
+
+          <div class="manager-form-actions">
+            <button
+              pButton
+              type="submit"
+              icon="pi pi-save"
+              label="Save product"
+              severity="contrast"
+              [loading]="savingProduct()"
+            ></button>
+
+            @if (selectedProduct()) {
+              <button
+                pButton
+                type="button"
+                icon="pi pi-box"
+                label="Archive"
+                severity="secondary"
+                [outlined]="true"
+                [disabled]="savingProduct()"
+                (click)="archiveSelectedProduct()"
+              ></button>
+            }
+          </div>
+        </form>
+      </article>
+    </section>
+
+    <section class="manager-panel manager-panel--payments">
+      <header class="manager-panel__header">
+        <div>
+          <p class="manager-eyebrow">Payments</p>
+          <h2>Reconciliation</h2>
+        </div>
+      </header>
+
+      <div class="manager-payment-list">
+        @if (paymentsLoading()) {
+          @for (placeholder of [1, 2, 3]; track placeholder) {
+            <p-skeleton width="100%" height="4.5rem"></p-skeleton>
+          }
+        } @else if (managerPayments().length === 0) {
+          <div class="manager-empty-state">
+            <strong>No payments</strong>
+          </div>
+        } @else {
+          @for (payment of managerPayments(); track payment.paymentId) {
+            <article class="manager-payment-row">
+              <div>
+                <strong>{{ payment.orderNumber }}</strong>
+                <span>{{ payment.customerEmail }}</span>
+              </div>
+              <div>
+                <span>{{ payment.allocatedStoreName ?? 'Store pending' }}</span>
+                <small>{{ formatDate(payment.capturedAt ?? payment.createdAt) }}</small>
+              </div>
+              <p-tag [value]="formatStatus(payment.paymentStatus)" [severity]="getPaymentSeverity(payment)"></p-tag>
+              <strong>{{ formatCurrency(payment.amount) }}</strong>
+            </article>
+          }
+        }
+      </div>
+    </section>
+  }
+</section>

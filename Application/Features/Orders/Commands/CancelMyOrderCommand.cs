@@ -1,4 +1,5 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using AutoMapper;
@@ -13,6 +14,7 @@ public sealed class CancelMyOrderCommandHandler(
     IOrderRepository orderRepository,
     IApplicationDbContext applicationDbContext,
     IUser user,
+    IApplicationCache applicationCache,
     IMapper mapper)
     : IRequestHandler<CancelMyOrderCommand, OrderDto>
 {
@@ -44,6 +46,7 @@ public sealed class CancelMyOrderCommandHandler(
         }
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await applicationCache.InvalidateRegionAsync(CacheRegions.Catalog, cancellationToken);
         return mapper.Map<OrderDto>(order);
     }
 

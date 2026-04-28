@@ -27,6 +27,7 @@ public sealed class OrderMappingProfile : Profile
             .ForCtorParam(nameof(OrderDto.CustomerLongitude), opt => opt.MapFrom(src => src.CustomerLongitude))
             .ForCtorParam(nameof(OrderDto.AllocatedStoreId), opt => opt.MapFrom(src => src.AllocatedStoreId))
             .ForCtorParam(nameof(OrderDto.AllocatedStoreName), opt => opt.MapFrom(src => src.AllocatedStore != null ? src.AllocatedStore.Name : null))
+            .ForCtorParam(nameof(OrderDto.CreatedAt), opt => opt.MapFrom(src => src.CreatedAt))
             .ForCtorParam(nameof(OrderDto.Status), opt => opt.MapFrom(src => src.Status))
             .ForCtorParam(nameof(OrderDto.TotalAmount), opt => opt.MapFrom(src => src.TotalAmount))
             .ForCtorParam(

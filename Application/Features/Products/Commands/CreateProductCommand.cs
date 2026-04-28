@@ -1,4 +1,5 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using AutoMapper;
@@ -22,6 +23,7 @@ public sealed class CreateProductCommandHandler(
     IProductRepository productRepository,
     IApplicationDbContext applicationDbContext,
     IProductVectorIndexingService productVectorIndexingService,
+    IApplicationCache applicationCache,
     IMapper mapper)
     : IRequestHandler<CreateProductCommand, ProductDto>
 {
@@ -55,6 +57,7 @@ public sealed class CreateProductCommandHandler(
 
         await productRepository.AddAsync(product, cancellationToken);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await applicationCache.InvalidateRegionAsync(CacheRegions.Catalog, cancellationToken);
         await productVectorIndexingService.IndexProductGraphAsync(product.Id, cancellationToken);
 
         var createdProduct = await productRepository.GetByIdAsync(product.Id, cancellationToken)

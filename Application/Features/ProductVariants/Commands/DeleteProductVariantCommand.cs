@@ -1,4 +1,5 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using MediatR;
 
@@ -9,7 +10,8 @@ public sealed record DeleteProductVariantCommand(string ProductId, string Produc
 public sealed class DeleteProductVariantCommandHandler(
     IProductVariantRepository productVariantRepository,
     IApplicationDbContext applicationDbContext,
-    IProductVectorIndexingService productVectorIndexingService)
+    IProductVectorIndexingService productVectorIndexingService,
+    IApplicationCache applicationCache)
     : IRequestHandler<DeleteProductVariantCommand, bool>
 {
     public async Task<bool> Handle(DeleteProductVariantCommand request, CancellationToken cancellationToken)
@@ -24,6 +26,7 @@ public sealed class DeleteProductVariantCommandHandler(
 
         productVariantRepository.Remove(productVariant);
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await applicationCache.InvalidateRegionAsync(CacheRegions.Catalog, cancellationToken);
         await productVectorIndexingService.DeleteProductVariantAsync(productVariant.Id, cancellationToken);
 
         return true;

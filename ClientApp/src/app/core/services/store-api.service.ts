@@ -2,12 +2,18 @@ import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core';
 import { Observable, catchError, throwError } from 'rxjs';
 
-import { NearestStore, ProductStoreAvailability, ShopperLocation } from '../models/store.models';
+import { NearestStore, ProductStoreAvailability, ShopperLocation, StoreDto } from '../models/store.models';
 
 @Injectable({ providedIn: 'root' })
 export class StoreApiService {
   private readonly http = inject(HttpClient);
   private readonly storesApiUrl = '/api/Stores';
+
+  getStores(): Observable<StoreDto[]> {
+    return this.http
+      .get<StoreDto[]>(this.storesApiUrl)
+      .pipe(catchError((error) => this.handleError(error)));
+  }
 
   getNearestStore(shopperLocation: ShopperLocation): Observable<NearestStore> {
     const params = new HttpParams()

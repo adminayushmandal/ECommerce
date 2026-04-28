@@ -13,7 +13,7 @@
   padding: 1.15rem 1.35rem 0;
   border-bottom: none;
   background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.12), transparent 34%),
+    radial-gradient(circle at top right, rgba(184, 85, 50, 0.12), transparent 34%),
     linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(255, 255, 255, 0.96));
 }
 
@@ -21,13 +21,13 @@
   padding: 0 1.35rem 1.35rem;
   overflow: hidden;
   background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.06), transparent 26%),
+    radial-gradient(circle at top right, rgba(184, 85, 50, 0.06), transparent 26%),
     linear-gradient(180deg, rgba(248, 250, 252, 0.98), rgba(255, 255, 255, 1));
 }
 
 :host ::ng-deep .enma-dialog .p-dialog-maximize-button,
 :host ::ng-deep .enma-dialog .p-dialog-header-icon {
-  color: #0f172a;
+  color: var(--cloth-ink);
 }
 
 .enma-launcher {
@@ -41,8 +41,8 @@
   padding: 0.9rem 1.1rem;
   border: 0;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0f172a, #0b1120 58%, #134e4a);
-  color: #f8fafc;
+  background: linear-gradient(135deg, var(--cloth-ink), #2f2f2f 58%, var(--cloth-accent));
+  color: #ffffff;
   box-shadow: 0 24px 55px rgba(15, 23, 42, 0.28);
   transition:
     transform 180ms ease,
@@ -59,7 +59,7 @@
   inset: -0.3rem;
   z-index: -1;
   border-radius: inherit;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.4), rgba(56, 189, 248, 0.18));
+  background: linear-gradient(135deg, rgba(184, 85, 50, 0.4), rgba(23, 23, 23, 0.18));
   opacity: 0.7;
   filter: blur(12px);
 }
@@ -113,7 +113,7 @@
   border: 1px solid rgba(226, 232, 240, 0.96);
   border-radius: 1.6rem;
   background:
-    radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 30%),
+    radial-gradient(circle at top right, rgba(184, 85, 50, 0.14), transparent 30%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.98));
 }
 
@@ -132,8 +132,8 @@
   width: 2.9rem;
   height: 2.9rem;
   border-radius: 1rem;
-  background: linear-gradient(135deg, #0f172a, #134e4a);
-  color: #ecfeff;
+  background: linear-gradient(135deg, var(--cloth-ink), var(--cloth-accent));
+  color: #ffffff;
   box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
   flex: 0 0 auto;
 }
@@ -144,7 +144,7 @@
   font-weight: 700;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  color: #0f766e;
+  color: var(--cloth-accent);
 }
 
 .enma-chat-shell__title {
@@ -152,7 +152,7 @@
   font-size: 1.45rem;
   line-height: 1.15;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--cloth-ink);
 }
 
 .enma-chat-shell__presence {
@@ -161,8 +161,8 @@
   gap: 0.55rem;
   padding: 0.75rem 0.95rem;
   border-radius: 999px;
-  background: rgba(236, 253, 245, 0.92);
-  color: #047857;
+  background: rgba(244, 243, 239, 0.92);
+  color: var(--cloth-ink);
   font-size: 0.8rem;
   font-weight: 700;
   letter-spacing: 0.18em;
@@ -172,7 +172,7 @@
 
 .enma-chat-shell__presence--busy {
   background: rgba(254, 252, 232, 0.96);
-  color: #a16207;
+  color: var(--cloth-accent);
 }
 
 .enma-chat-shell__presence-dot {
@@ -209,12 +209,12 @@
   margin: 0;
   font-size: 1.65rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--cloth-ink);
 }
 
 .enma-chat-shell__empty p {
   margin: 0;
-  color: #475569;
+  color: var(--cloth-muted);
   line-height: 1.7;
 }
 
@@ -228,7 +228,7 @@
 .enma-suggestion {
   border: 1px solid rgba(203, 213, 225, 0.95);
   background: #ffffff;
-  color: #475569;
+  color: var(--cloth-muted);
   border-radius: 999px;
   padding: 0.72rem 0.95rem;
   font-size: 0.82rem;
@@ -242,9 +242,9 @@
 
 .enma-suggestion:hover {
   transform: translateY(-1px);
-  border-color: rgba(16, 185, 129, 0.5);
-  background: rgba(236, 253, 245, 0.9);
-  color: #065f46;
+  border-color: rgba(184, 85, 50, 0.5);
+  background: rgba(244, 243, 239, 0.9);
+  color: var(--cloth-ink);
 }
 
 .enma-suggestion--soft {
@@ -267,10 +267,6 @@
   justify-content: flex-start;
 }
 
-.enma-message--welcome {
-  margin-bottom: 0.2rem;
-}
-
 .enma-avatar {
   display: inline-flex;
   align-items: center;
@@ -279,8 +275,8 @@
   height: 2.4rem;
   flex: 0 0 auto;
   border-radius: 999px;
-  background: linear-gradient(135deg, #0f172a, #134e4a);
-  color: #ecfeff;
+  background: linear-gradient(135deg, var(--cloth-ink), var(--cloth-accent));
+  color: #ffffff;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
 
@@ -290,14 +286,14 @@
   border-radius: 1.35rem;
   border: 1px solid rgba(226, 232, 240, 0.96);
   background: #ffffff;
-  color: #1e293b;
+  color: var(--cloth-ink-soft);
   box-shadow: 0 12px 32px rgba(15, 23, 42, 0.05);
 }
 
 .enma-message--user .enma-bubble {
   border-color: rgba(15, 23, 42, 0.12);
-  background: linear-gradient(135deg, #0f172a, #172554 92%);
-  color: #f8fafc;
+  background: linear-gradient(135deg, var(--cloth-ink), #2f2f2f 92%);
+  color: #ffffff;
   border-bottom-right-radius: 0.45rem;
 }
 
@@ -317,7 +313,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--cloth-muted);
 }
 
 .enma-message--user .enma-bubble__meta {
@@ -366,10 +362,6 @@
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.06);
 }
 
-.enma-composer__field {
-  display: block;
-}
-
 .enma-textarea {
   width: 100%;
   min-height: 5.5rem;
@@ -378,8 +370,8 @@
   resize: vertical;
   border-radius: 1.25rem;
   border: 1px solid rgba(148, 163, 184, 0.34);
-  background: linear-gradient(180deg, #ffffff, #f8fafc);
-  color: #334155;
+  background: linear-gradient(180deg, #ffffff, #ffffff);
+  color: var(--cloth-ink-soft);
   line-height: 1.7;
   transition:
     border-color 180ms ease,
@@ -388,8 +380,8 @@
 
 .enma-textarea:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
+  border-color: var(--cloth-accent);
+  box-shadow: 0 0 0 4px rgba(184, 85, 50, 0.12);
 }
 
 .enma-composer__footer {
@@ -402,7 +394,7 @@
 .enma-card__hint {
   margin: 0;
   max-width: 28rem;
-  color: #64748b;
+  color: var(--cloth-muted);
   font-size: 0.92rem;
   line-height: 1.7;
 }
@@ -433,33 +425,12 @@
   cursor: not-allowed;
 }
 
-.enma-button--primary {
-  background: linear-gradient(135deg, #0f172a, #0f3d3c);
-  color: #ffffff;
-}
-
-.enma-button--icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 3.1rem;
-  height: 3.1rem;
-  padding: 0;
-  font-size: 1rem;
-}
-
-.enma-button--ghost {
-  background: #ffffff;
-  border: 1px solid rgba(253, 224, 71, 0.45);
-  color: #a16207;
-}
-
 .enma-caret {
   display: inline-block;
   width: 0.72rem;
   height: 1.1rem;
   border-radius: 999px;
-  background: linear-gradient(180deg, #6ee7b7, #34d399);
+  background: var(--cloth-accent);
   animation: enma-caret-blink 1s steps(1, end) infinite;
 }
 

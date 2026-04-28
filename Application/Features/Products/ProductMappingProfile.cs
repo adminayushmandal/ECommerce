@@ -40,7 +40,7 @@ public sealed class ProductMappingProfile : Profile
             .ForCtorParam(nameof(ProductDto.IsActive), opt => opt.MapFrom(src => src.IsActive))
             .ForCtorParam(
                 nameof(ProductDto.Variants),
-                opt => opt.MapFrom(src => src.Variants.OrderBy(variant => variant.Name).ToArray()))
+                opt => opt.MapFrom(src => src.Variants.Where(variant => variant.IsActive).OrderBy(variant => variant.Name).ToArray()))
             .ForCtorParam(nameof(ProductDto.AvailableStoreId), opt => opt.MapFrom(_ => (string?)null))
             .ForCtorParam(nameof(ProductDto.AvailableStoreName), opt => opt.MapFrom(_ => (string?)null))
             .ForCtorParam(nameof(ProductDto.AvailableQuantity), opt => opt.MapFrom(_ => (int?)null));

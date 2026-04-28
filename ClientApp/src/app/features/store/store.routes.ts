@@ -22,6 +22,23 @@ export const storeRoutes: Routes = [
         loadComponent: () =>
           import('./pages/profile-page/profile-page.component').then((m) => m.ProfilePageComponent),
       },
+      {
+        path: 'manager/dashboard',
+        loadComponent: () =>
+          import('./pages/store-manager-dashboard-page/store-manager-dashboard-page.component').then(
+            (m) => m.StoreManagerDashboardPageComponent
+          ),
+      },
+      {
+        path: 'checkout/paypal/return',
+        loadComponent: () =>
+          import('./pages/paypal-return-page/paypal-return-page.component').then((m) => m.PayPalReturnPageComponent),
+      },
+      {
+        path: 'checkout/paypal/cancel',
+        loadComponent: () =>
+          import('./pages/paypal-cancel-page/paypal-cancel-page.component').then((m) => m.PayPalCancelPageComponent),
+      },
     ],
   },
 ];

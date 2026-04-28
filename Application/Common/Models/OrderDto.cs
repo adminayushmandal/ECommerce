@@ -11,6 +11,7 @@ public sealed record OrderDto(
     double CustomerLongitude,
     string? AllocatedStoreId,
     string? AllocatedStoreName,
+    DateTimeOffset CreatedAt,
     OrderStatus Status,
     decimal TotalAmount,
     IReadOnlyList<OrderItemDto> Items);

@@ -4,140 +4,104 @@ internal static class CatalogSeedData
 {
     public static IReadOnlyList<CategorySeed> Categories { get; } =
     [
-        new("audio-wearables", "Audio & Wearables", "Bluetooth audio, smart wearables, and everyday listening gear for work and commuting.", "0f766e"),
-        new("workspace-tech", "Workspace & Tech", "Desk upgrades and compact accessories for productive hybrid setups.", "1d4ed8"),
-        new("home-kitchen", "Home & Kitchen", "Home goods and kitchen staples focused on practical daily use.", "b45309"),
-        new("fitness-outdoors", "Fitness & Outdoors", "Training accessories and outdoor gear built for active routines.", "15803d"),
-        new("beauty-self-care", "Beauty & Self Care", "Skincare, fragrance, and beauty essentials for quick personal care rituals.", "be185d"),
-        new("travel-everyday-carry", "Travel & Everyday Carry", "Durable bags and portable essentials for regular travel.", "374151")
+        new("mens-clothing", "Men", "Shirts, trousers, jackets, and knits built for everyday menswear capsules.", "171717"),
+        new("womens-clothing", "Women", "Dresses, tailoring, denim, and knit layers for polished daily dressing.", "b85532"),
+        new("kids-clothing", "Kids", "Durable tees, dungarees, hoodies, jackets, and occasion pieces for growing wardrobes.", "3563b5")
     ];
 
     public static IReadOnlyList<ProductSeed> Products { get; } =
     [
-        new("audio-wearables", "AUD-1001", "aurora-wireless-earbuds", "Aurora Wireless Earbuds", "Compact wireless earbuds with clear call quality and a pocket-size charging case.", 79.00m, "0f766e",
+        new("mens-clothing", "MCL-1001", "oxford-overshirt", "Oxford Overshirt", "A structured cotton overshirt that layers cleanly over tees or fine knits.", 69.00m, "e7e5df",
         [
-            new("AUD-1001-BLK", "Midnight Black", "Color: Midnight Black",  "111827", null),
-            new("AUD-1001-WHT", "Cloud White", "Color: Cloud White", "94a3b8", 5.00m)
+            new("MCL-1001-M-WHT", "M / White", "Size: M, Color: White, Fit: Regular", "f8fafc", null),
+            new("MCL-1001-L-SKY", "L / Sky Blue", "Size: L, Color: Sky Blue, Fit: Regular", "93c5fd", null),
+            new("MCL-1001-XL-CHR", "XL / Charcoal", "Size: XL, Color: Charcoal, Fit: Regular", "374151", 4.00m)
         ]),
-        new("audio-wearables", "AUD-1002", "atlas-over-ear-headphones", "Atlas Over-Ear Headphones", "Noise-isolating over-ear headphones designed for long work sessions and flights.", 149.00m, "115e59",
+        new("mens-clothing", "MCL-1002", "linen-resort-shirt", "Linen Resort Shirt", "A breathable short-sleeve linen shirt cut for warm days and relaxed evenings.", 54.00m, "d8c7a4",
         [
-            new("AUD-1002-BLK", "Graphite", "Color: Graphite", "1f2937", null),
-            new("AUD-1002-SND", "Sandstone", "Color: Sandstone", "a16207", 10.00m)
+            new("MCL-1002-S-SGE", "S / Sage", "Size: S, Color: Sage, Fabric: Linen blend", "87986a", null),
+            new("MCL-1002-M-CRM", "M / Cream", "Size: M, Color: Cream, Fabric: Linen blend", "efe4cf", null),
+            new("MCL-1002-L-TER", "L / Terracotta", "Size: L, Color: Terracotta, Fabric: Linen blend", "b85532", 3.00m)
         ]),
-        new("audio-wearables", "AUD-1003", "pulse-smartwatch", "Pulse Smartwatch", "A lightweight smartwatch with wellness tracking, notifications, and multi-day battery life.", 199.00m, "0f766e",
+        new("mens-clothing", "MCL-1003", "stretch-chino-trouser", "Stretch Chino Trouser", "A slim tapered chino with comfortable stretch for office days and weekend plans.", 79.00m, "1f2937",
         [
-            new("AUD-1003-BLK", "Black Silicone", "Band: Black Silicone", "111827", null),
-            new("AUD-1003-SLV", "Silver Mesh", "Band: Silver Mesh", "64748b", 15.00m)
+            new("MCL-1003-32-NVY", "32 / Navy", "Waist: 32, Color: Navy, Fit: Slim taper", "1e3a8a", null),
+            new("MCL-1003-34-STN", "34 / Stone", "Waist: 34, Color: Stone, Fit: Slim taper", "c4b59b", null),
+            new("MCL-1003-36-OLV", "36 / Olive", "Waist: 36, Color: Olive, Fit: Slim taper", "4d5f35", 5.00m)
         ]),
-        new("audio-wearables", "AUD-1004", "aerofit-smart-band", "AeroFit Smart Band", "Slim activity band with heart rate monitoring and water-resistant construction.", 59.00m, "134e4a",
+        new("mens-clothing", "MCL-1004", "selvedge-denim-jacket", "Selvedge Denim Jacket", "A rigid denim layer with clean hardware, roomy pockets, and a boxy profile.", 119.00m, "263b6a",
         [
-            new("AUD-1004-LME", "Lime Sport", "Band: Lime Sport", "65a30d", null),
-            new("AUD-1004-NVY", "Navy Sport", "Band: Navy Sport", "1d4ed8", null)
+            new("MCL-1004-M-IND", "M / Indigo", "Size: M, Color: Indigo, Fit: Boxy", "263b6a", null),
+            new("MCL-1004-L-BLK", "L / Washed Black", "Size: L, Color: Washed Black, Fit: Boxy", "27272a", null),
+            new("MCL-1004-XL-ECR", "XL / Ecru", "Size: XL, Color: Ecru, Fit: Boxy", "e8dfc8", 8.00m)
         ]),
-
-        new("workspace-tech", "TEC-2001", "nova-mechanical-keyboard", "Nova Mechanical Keyboard", "Hot-swappable mechanical keyboard with compact layout and tactile feedback.", 129.00m, "1d4ed8",
+        new("mens-clothing", "MCL-1005", "merino-crew-knit", "Merino Crew Knit", "A lightweight merino crew neck that works as a soft base layer or standalone sweater.", 86.00m, "2f2f2f",
         [
-            new("TEC-2001-WHT", "Ice White", "Switches: Tactile, Case: Ice White", "cbd5e1", null),
-            new("TEC-2001-CHR", "Charcoal", "Switches: Linear, Case: Charcoal", "1f2937", 10.00m)
-        ]),
-        new("workspace-tech", "TEC-2002", "glide-ergonomic-mouse", "Glide Ergonomic Mouse", "Right-handed ergonomic mouse tuned for all-day comfort and precise tracking.", 69.00m, "2563eb",
-        [
-            new("TEC-2002-BLK", "Matte Black", "Finish: Matte Black", "111827", null),
-            new("TEC-2002-SLV", "Soft Silver", "Finish: Soft Silver", "94a3b8", 5.00m)
-        ]),
-        new("workspace-tech", "TEC-2003", "horizon-laptop-stand", "Horizon Laptop Stand", "Foldable aluminum stand that raises laptops for improved posture and airflow.", 54.00m, "1e40af",
-        [
-            new("TEC-2003-SLV", "Silver", "Finish: Silver", "94a3b8", null),
-            new("TEC-2003-BLU", "Ocean Blue", "Finish: Ocean Blue", "1d4ed8", 4.00m)
-        ]),
-        new("workspace-tech", "TEC-2004", "beam-usb-c-dock", "Beam USB-C Dock", "Seven-port USB-C dock with HDMI, Ethernet, and pass-through charging support.", 89.00m, "1e3a8a",
-        [
-            new("TEC-2004-GRY", "Graphite", "Finish: Graphite", "374151", null),
-            new("TEC-2004-SLV", "Aluminum Silver", "Finish: Aluminum Silver", "cbd5e1", 6.00m)
+            new("MCL-1005-M-OAT", "M / Oat", "Size: M, Color: Oat, Fabric: Merino blend", "d6c7aa", null),
+            new("MCL-1005-L-NVY", "L / Navy", "Size: L, Color: Navy, Fabric: Merino blend", "1e3a8a", null),
+            new("MCL-1005-XL-FOR", "XL / Forest", "Size: XL, Color: Forest, Fabric: Merino blend", "166534", 6.00m)
         ]),
 
-        new("home-kitchen", "HOM-3001", "ember-stainless-bottle", "Ember Stainless Bottle", "Double-wall insulated bottle that keeps drinks cold through daily commutes.", 34.00m, "b45309",
+        new("womens-clothing", "WCL-2001", "wrap-midi-dress", "Wrap Midi Dress", "A fluid wrap dress with adjustable waist ties and a soft drape for day-to-night styling.", 98.00m, "b85532",
         [
-            new("HOM-3001-SGE", "Sage Green", "Color: Sage Green", "4d7c0f", null),
-            new("HOM-3001-BLK", "Obsidian", "Color: Obsidian", "111827", null)
+            new("WCL-2001-XS-DHL", "XS / Dahlia", "Size: XS, Color: Dahlia, Length: Midi", "be185d", null),
+            new("WCL-2001-S-BLK", "S / Black", "Size: S, Color: Black, Length: Midi", "171717", null),
+            new("WCL-2001-M-SGE", "M / Sage", "Size: M, Color: Sage, Length: Midi", "87986a", 7.00m)
         ]),
-        new("home-kitchen", "HOM-3002", "sear-cast-iron-skillet", "Sear Cast Iron Skillet", "Pre-seasoned cast iron skillet sized for weeknight cooking and oven finishes.", 46.00m, "92400e",
+        new("womens-clothing", "WCL-2002", "wide-leg-linen-trouser", "Wide-Leg Linen Trouser", "High-rise linen trousers with a relaxed wide leg and clean front pleats.", 84.00m, "c4b59b",
         [
-            new("HOM-3002-10", "10 Inch", "Size: 10 inch", "78350f", null),
-            new("HOM-3002-12", "12 Inch", "Size: 12 inch", "b45309", 8.00m)
+            new("WCL-2002-26-STN", "26 / Stone", "Waist: 26, Color: Stone, Fit: Wide leg", "c4b59b", null),
+            new("WCL-2002-28-OLV", "28 / Olive", "Waist: 28, Color: Olive, Fit: Wide leg", "4d5f35", null),
+            new("WCL-2002-30-BLK", "30 / Black", "Waist: 30, Color: Black, Fit: Wide leg", "171717", 5.00m)
         ]),
-        new("home-kitchen", "HOM-3003", "mist-aroma-diffuser", "Mist Aroma Diffuser", "Quiet aroma diffuser with timed mist modes and warm ambient lighting.", 39.00m, "a16207",
+        new("womens-clothing", "WCL-2003", "ribbed-knit-top", "Ribbed Knit Top", "A close-fit ribbed top with a soft hand feel and easy tuck-in length.", 42.00m, "efe4cf",
         [
-            new("HOM-3003-BCH", "Beech", "Finish: Beech", "ca8a04", null),
-            new("HOM-3003-WHT", "Ceramic White", "Finish: Ceramic White", "cbd5e1", 3.00m)
+            new("WCL-2003-S-IVY", "S / Ivory", "Size: S, Color: Ivory, Fit: Close", "f5efe2", null),
+            new("WCL-2003-M-TPE", "M / Taupe", "Size: M, Color: Taupe, Fit: Close", "9a8372", null),
+            new("WCL-2003-L-COC", "L / Cocoa", "Size: L, Color: Cocoa, Fit: Close", "6f4e37", 2.00m)
         ]),
-        new("home-kitchen", "HOM-3004", "loom-cotton-sheet-set", "Loom Cotton Sheet Set", "Breathable cotton sheet set with a soft washed finish for everyday comfort.", 79.00m, "b45309",
+        new("womens-clothing", "WCL-2004", "cropped-denim-jacket", "Cropped Denim Jacket", "A cropped denim jacket with a clean collar, contrast stitching, and everyday weight.", 92.00m, "4b72a8",
         [
-            new("HOM-3004-QN", "Queen - Sand", "Size: Queen, Color: Sand", "a16207", null),
-            new("HOM-3004-KG", "King - Mist", "Size: King, Color: Mist", "94a3b8", 12.00m)
+            new("WCL-2004-S-BLU", "S / Mid Blue", "Size: S, Color: Mid Blue, Fit: Cropped", "4b72a8", null),
+            new("WCL-2004-M-ECR", "M / Ecru", "Size: M, Color: Ecru, Fit: Cropped", "e8dfc8", null),
+            new("WCL-2004-L-CHR", "L / Charcoal", "Size: L, Color: Charcoal, Fit: Cropped", "374151", 6.00m)
         ]),
-
-        new("fitness-outdoors", "FIT-4001", "trek-trail-running-shoes", "Trek Trail Running Shoes", "Grip-focused trail runners with responsive cushioning and reinforced toe guards.", 119.00m, "15803d",
+        new("womens-clothing", "WCL-2005", "tailored-waistcoat", "Tailored Waistcoat", "A sharp sleeveless waistcoat designed for matching trousers or layered denim looks.", 76.00m, "b85532",
         [
-            new("FIT-4001-42", "Size 42 - Moss", "Size: 42, Color: Moss", "3f6212", null),
-            new("FIT-4001-44", "Size 44 - Slate", "Size: 44, Color: Slate", "334155", null)
-        ]),
-        new("fitness-outdoors", "FIT-4002", "summit-hiking-backpack", "Summit Hiking Backpack", "Weather-ready daypack with hydration sleeve and modular outer straps.", 109.00m, "166534",
-        [
-            new("FIT-4002-20", "20L - Forest", "Capacity: 20L, Color: Forest", "166534", null),
-            new("FIT-4002-30", "30L - Canyon", "Capacity: 30L, Color: Canyon", "b45309", 14.00m)
-        ]),
-        new("fitness-outdoors", "FIT-4003", "core-yoga-mat", "Core Yoga Mat", "Dense non-slip yoga mat built for home practice, stretching, and recovery sessions.", 42.00m, "15803d",
-        [
-            new("FIT-4003-OLV", "Olive", "Color: Olive", "4d7c0f", null),
-            new("FIT-4003-RSE", "Rose", "Color: Rose", "be185d", null)
-        ]),
-        new("fitness-outdoors", "FIT-4004", "apex-resistance-bands", "Apex Resistance Bands", "Five-band resistance set for mobility work, warmups, and strength sessions.", 29.00m, "14532d",
-        [
-            new("FIT-4004-LHT", "Light Set", "Resistance: Light to Medium", "0f766e", null),
-            new("FIT-4004-HVY", "Heavy Set", "Resistance: Medium to Heavy", "1e3a8a", 4.00m)
+            new("WCL-2005-XS-BLK", "XS / Black", "Size: XS, Color: Black, Fit: Tailored", "171717", null),
+            new("WCL-2005-S-CRM", "S / Cream", "Size: S, Color: Cream, Fit: Tailored", "efe4cf", null),
+            new("WCL-2005-M-TER", "M / Terracotta", "Size: M, Color: Terracotta, Fit: Tailored", "b85532", 4.00m)
         ]),
 
-        new("beauty-self-care", "BEA-5001", "luma-vitamin-c-serum", "Luma Vitamin C Serum", "Brightening serum formulated for daily use with a lightweight quick-absorbing texture.", 27.00m, "be185d",
+        new("kids-clothing", "KCL-3001", "kids-graphic-tee-pack", "Kids Graphic Tee Pack", "A three-tee cotton pack with playful prints and soft ribbed necklines.", 32.00m, "3563b5",
         [
-            new("BEA-5001-30", "30 ml", "Size: 30 ml", "be185d", null),
-            new("BEA-5001-50", "50 ml", "Size: 50 ml", "ec4899", 8.00m)
+            new("KCL-3001-4Y-OCN", "4Y / Ocean", "Size: 4Y, Color: Ocean, Pack: 3 tees", "2563eb", null),
+            new("KCL-3001-6Y-SUN", "6Y / Sun", "Size: 6Y, Color: Sun, Pack: 3 tees", "f2b84b", null),
+            new("KCL-3001-8Y-FOR", "8Y / Forest", "Size: 8Y, Color: Forest, Pack: 3 tees", "166534", 3.00m)
         ]),
-        new("beauty-self-care", "BEA-5002", "velvet-matte-lip-kit", "Velvet Matte Lip Kit", "Long-wear lip kit pairing a matte liquid color with a matching liner.", 24.00m, "9d174d",
+        new("kids-clothing", "KCL-3002", "kids-denim-dungaree", "Kids Denim Dungaree", "Durable denim dungarees with adjustable straps and roomy patch pockets.", 58.00m, "263b6a",
         [
-            new("BEA-5002-MAU", "Muted Mauve", "Shade: Muted Mauve", "be185d", null),
-            new("BEA-5002-BER", "Berry Noir", "Shade: Berry Noir", "831843", null)
+            new("KCL-3002-4Y-IND", "4Y / Indigo", "Size: 4Y, Color: Indigo, Fit: Adjustable", "263b6a", null),
+            new("KCL-3002-6Y-SKY", "6Y / Sky", "Size: 6Y, Color: Sky, Fit: Adjustable", "93c5fd", null),
+            new("KCL-3002-8Y-ECR", "8Y / Ecru", "Size: 8Y, Color: Ecru, Fit: Adjustable", "e8dfc8", 4.00m)
         ]),
-        new("beauty-self-care", "BEA-5003", "calm-scalp-massager", "Calm Scalp Massager", "Flexible silicone scalp massager designed for shower use and gentle exfoliation.", 16.00m, "db2777",
+        new("kids-clothing", "KCL-3003", "kids-quilted-jacket", "Kids Quilted Jacket", "A lightweight quilted jacket with snap closure and soft jersey lining.", 74.00m, "9f2f2f",
         [
-            new("BEA-5003-BLU", "Spa Blue", "Color: Spa Blue", "1d4ed8", null),
-            new("BEA-5003-PNK", "Soft Pink", "Color: Soft Pink", "ec4899", null)
+            new("KCL-3003-5Y-RED", "5Y / Red", "Size: 5Y, Color: Red, Warmth: Light", "b91c1c", null),
+            new("KCL-3003-7Y-NVY", "7Y / Navy", "Size: 7Y, Color: Navy, Warmth: Light", "1e3a8a", null),
+            new("KCL-3003-9Y-OLV", "9Y / Olive", "Size: 9Y, Color: Olive, Warmth: Light", "4d5f35", 5.00m)
         ]),
-        new("beauty-self-care", "BEA-5004", "drift-cedar-cologne", "Drift Cedar Cologne", "Fresh cedar-forward fragrance with citrus opening notes and a dry wood base.", 58.00m, "a21caf",
+        new("kids-clothing", "KCL-3004", "kids-cotton-hoodie", "Kids Cotton Hoodie", "A brushed cotton hoodie with a relaxed fit, kangaroo pocket, and ribbed cuffs.", 44.00m, "8b7bb8",
         [
-            new("BEA-5004-50", "50 ml", "Size: 50 ml", "7e22ce", null),
-            new("BEA-5004-100", "100 ml", "Size: 100 ml", "6b21a8", 18.00m)
+            new("KCL-3004-4Y-LAV", "4Y / Lavender", "Size: 4Y, Color: Lavender, Fabric: Brushed cotton", "8b7bb8", null),
+            new("KCL-3004-6Y-MNT", "6Y / Mint", "Size: 6Y, Color: Mint, Fabric: Brushed cotton", "8fbfa1", null),
+            new("KCL-3004-8Y-CHR", "8Y / Charcoal", "Size: 8Y, Color: Charcoal, Fabric: Brushed cotton", "374151", 3.00m)
         ]),
-
-        new("travel-everyday-carry", "TRV-6001", "compass-weekender-duffel", "Compass Weekender Duffel", "Structured weekender bag with padded handles and separate shoe compartment.", 119.00m, "374151",
+        new("kids-clothing", "KCL-3005", "kids-party-dress", "Kids Party Dress", "A soft occasion dress with a lined bodice, full skirt, and easy back closure.", 68.00m, "d9a0b5",
         [
-            new("TRV-6001-OLV", "Olive Canvas", "Material: Olive Canvas", "4d7c0f", null),
-            new("TRV-6001-BLK", "Black Twill", "Material: Black Twill", "111827", 6.00m)
-        ]),
-        new("travel-everyday-carry", "TRV-6002", "harbor-carry-on-case", "Harbor Carry-On Case", "Hard-shell carry-on case with 360-degree wheels and interior compression straps.", 159.00m, "4b5563",
-        [
-            new("TRV-6002-SLV", "Silver Shell", "Shell: Silver", "94a3b8", null),
-            new("TRV-6002-NVY", "Navy Shell", "Shell: Navy", "1e3a8a", 10.00m)
-        ]),
-        new("travel-everyday-carry", "TRV-6003", "slate-leather-wallet", "Slate Leather Wallet", "Slim leather wallet with quick-access card slots and reinforced stitching.", 49.00m, "1f2937",
-        [
-            new("TRV-6003-ESP", "Espresso", "Leather: Espresso", "78350f", null),
-            new("TRV-6003-CHR", "Charcoal", "Leather: Charcoal", "1f2937", null)
-        ]),
-        new("travel-everyday-carry", "TRV-6004", "nimbus-travel-pillow", "Nimbus Travel Pillow", "Supportive memory foam pillow with washable cover for long-haul travel comfort.", 37.00m, "6b7280",
-        [
-            new("TRV-6004-GRY", "Mist Grey", "Color: Mist Grey", "94a3b8", null),
-            new("TRV-6004-NVY", "Deep Navy", "Color: Deep Navy", "1e3a8a", null)
+            new("KCL-3005-5Y-ROS", "5Y / Rose", "Size: 5Y, Color: Rose, Length: Knee", "d9a0b5", null),
+            new("KCL-3005-7Y-IVY", "7Y / Ivory", "Size: 7Y, Color: Ivory, Length: Knee", "f5efe2", null),
+            new("KCL-3005-9Y-BER", "9Y / Berry", "Size: 9Y, Color: Berry, Length: Knee", "9d174d", 6.00m)
         ])
     ];
 }

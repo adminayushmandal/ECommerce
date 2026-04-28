@@ -1,0 +1,32 @@
+<section class="mx-auto max-w-2xl px-4 py-10">
+  <div class="rounded-lg border border-neutral-200 bg-white/92 px-6 py-8 text-center shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+    @if (status() === 'capturing') {
+      <div class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-neutral-50 text-neutral-700">
+        <i class="pi pi-spin pi-spinner text-2xl"></i>
+      </div>
+      <h1 class="mt-5 text-2xl font-semibold text-neutral-950">Confirming payment</h1>
+      <p class="mt-3 text-sm leading-6 text-neutral-500">Keep this page open while PayPal confirms the capture.</p>
+    } @else if (status() === 'success') {
+      <div class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-neutral-50 text-neutral-700">
+        <i class="pi pi-check text-2xl"></i>
+      </div>
+      <h1 class="mt-5 text-2xl font-semibold text-neutral-950">Payment confirmed</h1>
+      <p class="mt-3 text-sm leading-6 text-neutral-500">Order {{ orderNumber() }} is paid and ready for fulfillment.</p>
+      @if (amount() !== null) {
+        <p class="mt-4 text-lg font-semibold text-neutral-950">{{ currencyCode() }} {{ amount() }}</p>
+      }
+    } @else {
+      <div class="mx-auto inline-flex h-14 w-14 items-center justify-center rounded-full bg-red-50 text-red-700">
+        <i class="pi pi-exclamation-triangle text-2xl"></i>
+      </div>
+      <h1 class="mt-5 text-2xl font-semibold text-neutral-950">Payment could not be confirmed</h1>
+      <p class="mt-3 text-sm leading-6 text-neutral-500">{{ errorMessage() }}</p>
+    }
+
+    <div class="mt-7 flex justify-center">
+      <a routerLink="/" class="inline-flex items-center justify-center rounded-full bg-neutral-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-neutral-800">
+        Back to store
+      </a>
+    </div>
+  </div>
+</section>

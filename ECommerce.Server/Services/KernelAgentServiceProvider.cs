@@ -64,7 +64,8 @@ namespace ECommerce.Server.Services
                     Temperature = 0.5f,
                     TopK = 40,
                     TopP = 0.96f,
-                    FunctionChoiceBehavior = FunctionChoiceBehavior.None()
+                    FunctionChoiceBehavior = FunctionChoiceBehavior.None(),
+                    NumPredict = 2000
                 })
             };
         }

@@ -2,16 +2,555 @@
   display: block;
 }
 
-.store-shell::after {
-  content: '';
+.store-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(rgba(23, 23, 23, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(23, 23, 23, 0.028) 1px, transparent 1px),
+    var(--cloth-paper);
+  background-size:
+    42px 42px,
+    42px 42px,
+    auto;
+  color: var(--cloth-ink);
+}
+
+.store-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  border-bottom: 1px solid rgba(23, 23, 23, 0.08);
+  background: rgba(244, 243, 239, 0.92);
+  backdrop-filter: blur(18px);
+}
+
+.store-header__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  max-width: 92rem;
+  min-height: 4.75rem;
+  margin: 0 auto;
+  padding: 0.75rem clamp(1rem, 3vw, 2rem);
+}
+
+.store-navigation,
+.store-nav,
+.store-brand,
+.account-pill,
+.store-actions,
+.bag-button,
+.quantity-stepper,
+.cart-total {
+  display: flex;
+  align-items: center;
+}
+
+.store-navigation {
+  min-width: 0;
+  gap: 1.1rem;
+}
+
+.store-menu-button {
+  display: inline-flex;
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cloth-ink);
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
+}
+
+.store-menu-button:hover {
+  border-color: var(--cloth-line);
+  background: #ffffff;
+  transform: translateY(-1px);
+}
+
+.store-nav {
+  gap: clamp(1rem, 3vw, 2.2rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.store-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.store-nav a {
+  flex: 0 0 auto;
+  color: var(--cloth-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.store-nav a:hover {
+  color: var(--cloth-accent);
+  transform: translateY(-1px);
+}
+
+.store-brand {
+  justify-self: center;
+  gap: 0.7rem;
+  color: var(--cloth-ink);
+}
+
+.store-brand span {
+  display: inline-block;
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 1px solid var(--cloth-ink);
+  background: linear-gradient(90deg, var(--cloth-ink) 0 49%, #ffffff 50% 100%);
+  transform: rotate(45deg);
+}
+
+.store-brand strong {
   position: absolute;
-  inset: 6rem auto auto 50%;
-  height: 22rem;
-  width: min(70vw, 54rem);
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.store-actions {
+  justify-content: flex-end;
+  gap: 0.55rem;
+  min-width: 0;
+}
+
+.store-actions__signin {
+  width: 2.55rem;
+  height: 2.55rem;
+  justify-content: center;
+  padding: 0;
+}
+
+.account-pill {
+  max-width: 10rem;
+  min-width: 0;
+  gap: 0.55rem;
+  border: 1px solid var(--cloth-line);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 0.24rem 0.62rem 0.24rem 0.24rem;
+  color: var(--cloth-ink);
+}
+
+.account-pill span {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--cloth-ink);
+  color: #ffffff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.account-pill strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.82rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bag-button {
+  position: relative;
+  min-height: 2.55rem;
+  gap: 0.35rem;
+  justify-content: center;
+  padding-inline: 1rem 0.42rem;
+}
+
+.bag-button__count {
+  display: inline-flex;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--cloth-ink);
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.store-main {
+  max-width: 92rem;
+  margin: 0 auto;
+  padding: 0.85rem clamp(0.75rem, 2.4vw, 2rem) 5.75rem;
+}
+
+:host ::ng-deep .fashion-cart-drawer {
+  width: min(100vw, 34rem);
+  border-left: 1px solid var(--cloth-line);
+  background: var(--cloth-paper);
+}
+
+:host ::ng-deep .fashion-cart-drawer .p-drawer-content {
+  height: 100%;
+  padding: 0;
+}
+
+.cart-drawer {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  height: 100%;
+}
+
+.cart-drawer__header,
+.cart-drawer__footer {
+  border-color: var(--cloth-line);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.cart-drawer__header {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  border-bottom: 1px solid;
+  padding: 1.2rem;
+}
+
+.cart-eyebrow {
+  margin: 0;
+  color: var(--cloth-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.cart-drawer__header h2 {
+  margin: 0.35rem 0 0;
+  color: var(--cloth-ink);
+  font-family: "Anton", "Poppins", sans-serif;
+  font-size: clamp(2.2rem, 8vw, 3.9rem);
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.cart-drawer__header p:last-child,
+.empty-cart p,
+.fulfillment-card p,
+.cart-line__top small {
+  color: var(--cloth-muted);
+  line-height: 1.6;
+}
+
+.cart-drawer__header p:last-child {
+  margin: 0.55rem 0 0;
+  font-size: 0.9rem;
+}
+
+.cart-drawer__body {
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem;
+}
+
+.empty-cart {
+  display: grid;
+  justify-items: center;
+  gap: 0.85rem;
+  border: 1px dashed var(--cloth-soft);
+  background: #ffffff;
+  padding: 2.2rem 1rem;
+  text-align: center;
+}
+
+.empty-cart span {
+  display: inline-flex;
+  width: 4rem;
+  height: 4rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--cloth-panel-muted);
+  color: var(--cloth-ink);
+  font-size: 1.35rem;
+}
+
+.empty-cart h3 {
+  margin: 0;
+  color: var(--cloth-ink);
+  font-size: 1.25rem;
+}
+
+.empty-cart p {
+  margin: 0;
+  max-width: 19rem;
+}
+
+.cart-list {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.cart-line {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  gap: 0.85rem;
+  border: 1px solid var(--cloth-line);
+  background: #ffffff;
+  padding: 0.7rem;
+}
+
+.cart-line__visual div {
+  display: grid;
+  aspect-ratio: 1;
+  overflow: hidden;
+  place-items: center;
+  background: var(--cloth-panel-muted);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.cart-line__visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cart-line__visual span {
+  font-size: 2.6rem;
+  font-weight: 800;
+}
+
+.cart-line__content {
+  display: grid;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.cart-line__top,
+.cart-line__bottom {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.cart-line__top {
+  align-items: flex-start;
+}
+
+.cart-line__top div {
+  min-width: 0;
+}
+
+.cart-line__top p {
+  margin: 0;
+  color: var(--cloth-muted);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.cart-line__top a {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--cloth-ink);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.cart-line__top small {
+  display: block;
+  margin-top: 0.28rem;
+  overflow-wrap: anywhere;
+  font-size: 0.8rem;
+}
+
+.cart-line__bottom {
+  align-items: center;
+}
+
+.quantity-stepper {
+  flex: 0 0 auto;
+  border: 1px solid var(--cloth-line);
+  border-radius: 999px;
+  background: var(--cloth-paper);
+  padding: 0.1rem;
+}
+
+.quantity-stepper strong {
+  min-width: 2rem;
+  text-align: center;
+}
+
+.cart-line__price {
+  text-align: right;
+}
+
+.cart-line__price span,
+.cart-total span {
+  display: block;
+  color: var(--cloth-muted);
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.cart-line__price strong,
+.cart-total strong {
+  color: var(--cloth-ink);
+  font-size: 1.05rem;
+}
+
+.cart-drawer__footer {
+  display: grid;
+  gap: 0.8rem;
+  border-top: 1px solid;
+  padding: 1rem;
+}
+
+.fulfillment-card {
+  display: grid;
+  gap: 0.85rem;
+  border: 1px solid var(--cloth-line);
+  background: var(--cloth-panel-muted);
+  padding: 0.95rem;
+}
+
+.fulfillment-card h3 {
+  margin: 0.35rem 0 0;
+  color: var(--cloth-ink);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
+}
+
+.fulfillment-card p:last-child {
+  margin: 0.35rem 0 0;
+  font-size: 0.88rem;
+}
+
+.fulfillment-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.cart-total {
+  justify-content: space-between;
+  border-top: 1px solid var(--cloth-line);
+  padding-top: 0.85rem;
+}
+
+.cart-total strong {
+  font-size: 1.45rem;
+}
+
+.cart-checkout-button {
+  justify-content: center;
+}
+
+.mobile-bag {
+  position: fixed;
+  left: 50%;
+  bottom: 1rem;
+  z-index: 25;
+  width: calc(100% - 2rem);
+  max-width: 24rem;
   transform: translateX(-50%);
-  border-radius: 9999px;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0));
-  opacity: 0.7;
-  filter: blur(28px);
-  pointer-events: none;
+  justify-content: center;
+  box-shadow: 0 18px 44px rgba(23, 23, 23, 0.22);
+}
+
+.mobile-bag span {
+  display: inline-flex;
+  margin-left: 0.35rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 520px) {
+  .store-header__inner {
+    grid-template-columns: auto 1fr auto;
+    min-height: 4.35rem;
+  }
+
+  .store-nav {
+    display: none;
+  }
+
+  .store-brand {
+    justify-self: center;
+  }
+
+  .bag-button {
+    width: 2.9rem;
+    min-width: 2.9rem;
+    height: 2.9rem;
+    min-height: 2.9rem;
+    padding: 0;
+  }
+
+  :host ::ng-deep .bag-button .p-button-label {
+    display: none;
+  }
+
+  .bag-button__count {
+    position: absolute;
+    top: 0.2rem;
+    right: 0.2rem;
+    min-width: 0.92rem;
+    height: 0.92rem;
+    border: 1px solid var(--cloth-ink);
+    font-size: 0.56rem;
+    line-height: 1;
+  }
+
+  .account-pill {
+    width: 2.9rem;
+    max-width: 2.9rem;
+    height: 2.9rem;
+    justify-content: center;
+    border-color: var(--cloth-line);
+    background: #ffffff;
+    padding: 0;
+  }
+
+  .account-pill span {
+    width: 2.05rem;
+    height: 2.05rem;
+  }
+
+  .account-pill strong,
+  .account-pill i {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .cart-line {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-line__visual div {
+    aspect-ratio: 1.8;
+  }
+}
+
+@media (min-width: 768px) {
+  .mobile-bag {
+    display: none;
+  }
 }

@@ -1,4 +1,5 @@
 using Application.Common.Exceptions;
+using Application.Common.Caching;
 using Application.Common.Interfaces;
 using Application.Common.Models;
 using AutoMapper;
@@ -22,6 +23,7 @@ public sealed class UpdateProductCommandHandler(
     IProductRepository productRepository,
     IApplicationDbContext applicationDbContext,
     IProductVectorIndexingService productVectorIndexingService,
+    IApplicationCache applicationCache,
     IMapper mapper)
     : IRequestHandler<UpdateProductCommand, ProductDto>
 {
@@ -57,6 +59,7 @@ public sealed class UpdateProductCommandHandler(
         product.SetActive(request.IsActive);
 
         await applicationDbContext.SaveChangesAsync(cancellationToken);
+        await applicationCache.InvalidateRegionAsync(CacheRegions.Catalog, cancellationToken);
         await productVectorIndexingService.IndexProductGraphAsync(product.Id, cancellationToken);
 
         return mapper.Map<ProductDto>(product);

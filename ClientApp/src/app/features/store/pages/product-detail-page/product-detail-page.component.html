@@ -1,97 +1,103 @@
 @if (loading() && !product()) {
   <div class="grid gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-    <div class="aspect-square animate-pulse rounded-[2rem] bg-white/80"></div>
+    <p-skeleton width="100%" height="34rem" borderRadius="2rem"></p-skeleton>
     <div class="space-y-4">
-      <div class="h-5 w-28 animate-pulse rounded-full bg-white/80"></div>
-      <div class="h-12 animate-pulse rounded-2xl bg-white/80"></div>
-      <div class="h-24 animate-pulse rounded-[1.6rem] bg-white/80"></div>
-      <div class="h-40 animate-pulse rounded-[1.6rem] bg-white/80"></div>
+      <p-skeleton width="8rem" height="1.5rem" borderRadius="999px"></p-skeleton>
+      <p-skeleton width="100%" height="4rem" borderRadius="1.25rem"></p-skeleton>
+      <p-skeleton width="100%" height="8rem" borderRadius="1.25rem"></p-skeleton>
+      <p-skeleton width="100%" height="12rem" borderRadius="1.25rem"></p-skeleton>
     </div>
   </div>
 } @else if (notFound()) {
-  <section class="rounded-[2rem] border border-dashed border-slate-300 bg-white/85 px-6 py-10 text-center">
-    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">Product unavailable</p>
-    <h1 class="mt-3 text-2xl font-semibold tracking-tight text-slate-950">This product could not be found.</h1>
-    <p class="mt-3 text-sm leading-6 text-slate-500">
+  <section class="rounded-lg border border-dashed border-neutral-300 bg-white/85 px-6 py-10 text-center">
+    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-neutral-400">Product unavailable</p>
+    <h1 class="mt-3 text-2xl font-semibold tracking-tight text-neutral-950">This product could not be found.</h1>
+    <p class="mt-3 text-sm leading-6 text-neutral-500">
       The item may have been removed from the catalog or the route slug no longer matches an active product.
     </p>
     <a
+      pButton
       routerLink="/"
+      icon="pi pi-home"
       aria-label="Back to storefront"
       pTooltip="Back to storefront"
       tooltipPosition="top"
-      class="icon-action-button mt-6 bg-slate-950 text-white hover:bg-emerald-900"
-    >
-      <i class="pi pi-home"></i>
-    </a>
+      severity="contrast"
+      [rounded]="true"
+      class="mt-6"
+    ></a>
   </section>
 } @else if (product(); as product) {
   <section class="space-y-8">
-    <nav class="flex flex-wrap items-center gap-2 text-sm text-slate-500">
-      <a routerLink="/" class="transition hover:text-slate-950">Storefront</a>
-      <span class="text-slate-300">/</span>
+    <nav class="flex flex-wrap items-center gap-2 text-sm text-neutral-500">
+      <a routerLink="/" class="transition hover:text-neutral-950">Storefront</a>
+      <span class="text-neutral-300">/</span>
       <span>{{ product.categoryName }}</span>
-      <span class="text-slate-300">/</span>
-      <span class="text-slate-950">{{ product.name }}</span>
+      <span class="text-neutral-300">/</span>
+      <span class="text-neutral-950">{{ product.name }}</span>
     </nav>
 
     <div class="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
       <div class="space-y-4">
-        <div class="overflow-hidden rounded-[2.2rem] border border-white/70 bg-white/90 p-4 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
-          <div class="overflow-hidden rounded-[1.8rem] bg-[radial-gradient(circle_at_top_left,_rgba(16,185,129,0.12),_transparent_42%),linear-gradient(180deg,_#ffffff,_#f8fafc)]">
-            <img
-              [src]="selectedVariant()?.imageUrl || product.imageUrl"
-              [alt]="product.name"
-              class="aspect-square w-full object-cover"
-            />
+        <div class="overflow-hidden rounded-lg border border-white/70 bg-white/90 p-4 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+          <div class="grid aspect-square place-items-center overflow-hidden rounded-lg text-white/90" [style.background]="getProductVisualBackground(selectedVariant()?.imageUrl || product.imageUrl)">
+            @if (canRenderImageUrl(selectedVariant()?.imageUrl || product.imageUrl)) {
+              <img
+                [src]="selectedVariant()?.imageUrl || product.imageUrl"
+                [alt]="product.name"
+                class="h-full w-full object-cover"
+              />
+            } @else {
+              <span class="text-[clamp(5rem,18vw,12rem)] font-extrabold opacity-80">{{ product.name.charAt(0) }}</span>
+            }
           </div>
         </div>
 
         <div class="grid gap-4 sm:grid-cols-3">
-          <article class="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Category</p>
-            <p class="mt-3 text-base font-semibold text-slate-950">{{ product.categoryName }}</p>
+          <article class="rounded-md border border-neutral-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Category</p>
+            <p class="mt-3 text-base font-semibold text-neutral-950">{{ product.categoryName }}</p>
           </article>
 
-          <article class="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Variants</p>
-            <p class="mt-3 text-base font-semibold text-slate-950">{{ product.variants.length }} options</p>
+          <article class="rounded-md border border-neutral-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Variants</p>
+            <p class="mt-3 text-base font-semibold text-neutral-950">{{ product.variants.length }} options</p>
           </article>
 
-          <article class="rounded-[1.5rem] border border-slate-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">SKU</p>
-            <p class="mt-3 text-base font-semibold text-slate-950">{{ selectedVariant()?.sku || product.sku }}</p>
+          <article class="rounded-md border border-neutral-200 bg-white/90 p-4 shadow-[0_16px_42px_rgba(15,23,42,0.05)]">
+            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">SKU</p>
+            <p class="mt-3 text-base font-semibold text-neutral-950">{{ selectedVariant()?.sku || product.sku }}</p>
           </article>
         </div>
       </div>
 
       <div class="space-y-5">
-        <section class="rounded-[2.2rem] border border-white/70 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
-          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">{{ product.categoryName }}</p>
-          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-slate-950">{{ product.name }}</h1>
-          <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-500">{{ product.description }}</p>
+        <section class="rounded-lg border border-white/70 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+          <p-tag [value]="product.categoryName" severity="contrast" [rounded]="true"></p-tag>
+          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-neutral-950">{{ product.name }}</h1>
+          <p class="mt-4 max-w-2xl text-sm leading-7 text-neutral-500">{{ product.description }}</p>
 
-          <div class="mt-6 flex flex-wrap items-end justify-between gap-4 rounded-[1.6rem] bg-slate-50 px-5 py-5">
+          <div class="mt-6 flex flex-wrap items-end justify-between gap-4 rounded-md bg-neutral-50 px-5 py-5">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Selected price</p>
-              <p class="mt-2 text-4xl font-semibold tracking-tight text-slate-950">{{ formatCurrency(displayPrice()) }}</p>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Selected price</p>
+              <p class="mt-2 text-4xl font-semibold tracking-tight text-neutral-950">{{ formatCurrency(displayPrice()) }}</p>
             </div>
 
-            <div class="rounded-[1.4rem] bg-white px-4 py-3 text-right shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
-              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">Guest checkout</p>
-              <p class="mt-2 text-sm leading-6 text-slate-500">Add now, then sign in when you are ready to complete the order.</p>
+            <div class="rounded-md bg-white px-4 py-3 text-right shadow-[0_12px_28px_rgba(15,23,42,0.05)]">
+              <p class="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-700">Guest checkout</p>
+              <p class="mt-2 text-sm leading-6 text-neutral-500">Add now, then sign in when you are ready to complete the order.</p>
             </div>
           </div>
         </section>
 
-        <section class="rounded-[2.2rem] border border-slate-200 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+        <section class="rounded-lg border border-neutral-200 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Choose an option</p>
-              <h2 class="mt-2 text-xl font-semibold tracking-tight text-slate-950">Variant and quantity</h2>
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Choose an option</p>
+              <h2 class="mt-2 text-xl font-semibold tracking-tight text-neutral-950">Variant and quantity</h2>
             </div>
             @if (selectedVariant(); as variant) {
-              <div class="rounded-full bg-emerald-50 px-4 py-2 text-sm font-medium text-emerald-900">
+              <div class="rounded-full bg-neutral-50 px-4 py-2 text-sm font-medium text-neutral-900">
                 {{ variant.name }}
               </div>
             }
@@ -102,27 +108,30 @@
               <button
                 type="button"
                 (click)="selectVariant(variant.id)"
-                class="rounded-[1.6rem] border px-4 py-4 text-left transition"
-                [class.border-slate-950]="selectedVariantId() === variant.id"
-                [class.bg-slate-950]="selectedVariantId() === variant.id"
+                class="rounded-md border px-4 py-4 text-left transition"
+                [class.border-neutral-950]="selectedVariantId() === variant.id"
+                [class.bg-neutral-950]="selectedVariantId() === variant.id"
                 [class.text-white]="selectedVariantId() === variant.id"
                 [class.shadow-[0_18px_38px_rgba(15,23,42,0.16)]]="selectedVariantId() === variant.id"
-                [class.border-slate-200]="selectedVariantId() !== variant.id"
-                [class.bg-slate-50]="selectedVariantId() !== variant.id"
-                [class.text-slate-950]="selectedVariantId() !== variant.id"
+                [class.border-neutral-200]="selectedVariantId() !== variant.id"
+                [class.bg-neutral-50]="selectedVariantId() !== variant.id"
+                [class.text-neutral-950]="selectedVariantId() !== variant.id"
               >
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
+                  <div class="flex min-w-0 gap-3">
+                    <span class="h-10 w-10 flex-none rounded-full border-[3px] border-current shadow-[0_0_0_1px_rgba(15,23,42,0.16)]" [style.background-color]="getVariantSwatchColor(variant)"></span>
+                    <div class="min-w-0">
                     <p class="text-base font-semibold">{{ variant.name }}</p>
                     @if (variant.attributeSummary) {
-                      <p class="mt-1 text-sm leading-6" [class.text-white/72]="selectedVariantId() === variant.id" [class.text-slate-500]="selectedVariantId() !== variant.id">
+                      <p class="mt-1 text-sm leading-6" [class.text-white/72]="selectedVariantId() === variant.id" [class.text-neutral-500]="selectedVariantId() !== variant.id">
                         {{ variant.attributeSummary }}
                       </p>
                     }
+                    </div>
                   </div>
 
                   <div class="text-left sm:text-right">
-                    <p class="text-xs uppercase tracking-[0.22em]" [class.text-white/60]="selectedVariantId() === variant.id" [class.text-slate-400]="selectedVariantId() !== variant.id">
+                    <p class="text-xs uppercase tracking-[0.22em]" [class.text-white/60]="selectedVariantId() === variant.id" [class.text-neutral-400]="selectedVariantId() !== variant.id">
                       Price
                     </p>
                     <p class="mt-1 text-lg font-semibold">{{ formatCurrency(variant.effectivePrice) }}</p>
@@ -132,122 +141,133 @@
             }
           </div>
 
-          <div class="mt-6 flex flex-col gap-4 rounded-[1.7rem] bg-slate-50 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
+          <div class="mt-6 flex flex-col gap-4 rounded-md bg-neutral-50 px-5 py-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Quantity</p>
-              <div class="mt-3 inline-flex items-center rounded-full border border-slate-200 bg-white p-1">
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Quantity</p>
+              <div class="mt-3 inline-flex items-center rounded-full border border-neutral-200 bg-white p-1">
                 <button
+                  pButton
                   type="button"
+                  icon="pi pi-minus"
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
                   aria-label="Decrease quantity"
                   pTooltip="Decrease quantity"
                   tooltipPosition="top"
-                  class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
                   (click)="decreaseQuantity()"
-                >
-                  <i class="pi pi-minus text-xs"></i>
-                </button>
-                <span class="min-w-12 text-center text-base font-semibold text-slate-950">{{ quantity() }}</span>
+                ></button>
+                <span class="min-w-12 text-center text-base font-semibold text-neutral-950">{{ quantity() }}</span>
                 <button
+                  pButton
                   type="button"
+                  icon="pi pi-plus"
+                  severity="secondary"
+                  [text]="true"
+                  [rounded]="true"
                   aria-label="Increase quantity"
                   pTooltip="Increase quantity"
                   tooltipPosition="top"
-                  class="inline-flex h-10 w-10 items-center justify-center rounded-full text-slate-500 transition hover:bg-slate-50 hover:text-slate-950"
                   (click)="increaseQuantity()"
-                >
-                  <i class="pi pi-plus text-xs"></i>
-                </button>
+                ></button>
               </div>
             </div>
 
             <div class="flex items-center gap-3 sm:min-w-[19rem] sm:justify-end">
               <button
+                pButton
                 type="button"
+                icon="pi pi-shopping-cart"
                 (click)="addToCart()"
                 aria-label="Add to cart"
                 pTooltip="Add to cart"
                 tooltipPosition="top"
-                class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-              >
-                <i class="pi pi-shopping-cart"></i>
-              </button>
+                severity="secondary"
+                [rounded]="true"
+                [outlined]="true"
+              ></button>
 
               <button
+                pButton
                 type="button"
+                icon="pi pi-bolt"
                 (click)="buyNow()"
                 aria-label="Buy now"
                 pTooltip="Buy now"
                 tooltipPosition="top"
-                class="icon-action-button bg-slate-950 text-white hover:bg-emerald-900"
-              >
-                <i class="pi pi-bolt"></i>
-              </button>
+                severity="contrast"
+                [rounded]="true"
+              ></button>
             </div>
           </div>
         </section>
 
-        <section class="rounded-[2.2rem] border border-slate-200 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
+        <section class="rounded-lg border border-neutral-200 bg-white/92 p-6 shadow-[0_25px_70px_rgba(15,23,42,0.08)]">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Store availability</p>
-              <h2 class="mt-2 text-xl font-semibold tracking-tight text-slate-950">Check nearby stores for this item</h2>
-              <p class="mt-2 text-sm leading-6 text-slate-500">
+              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Store availability</p>
+              <h2 class="mt-2 text-xl font-semibold tracking-tight text-neutral-950">Check nearby stores for this item</h2>
+              <p class="mt-2 text-sm leading-6 text-neutral-500">
                 Share your location to see which nearby store has this item in stock and sort results by distance.
               </p>
             </div>
 
             <div class="flex flex-wrap gap-2">
               <button
+                pButton
                 type="button"
+                icon="pi pi-map-marker"
                 (click)="useBrowserLocation()"
                 aria-label="Use my location"
                 pTooltip="Use my location"
                 tooltipPosition="top"
-                class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-              >
-                <i class="pi pi-map-marker"></i>
-              </button>
+                severity="secondary"
+                [rounded]="true"
+                [outlined]="true"
+              ></button>
               @if (hasShopperLocation()) {
                 <button
+                  pButton
                   type="button"
+                  icon="pi pi-filter-slash"
                   (click)="clearLocation()"
                   aria-label="Clear location"
                   pTooltip="Clear location"
                   tooltipPosition="top"
-                  class="icon-action-button border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-900"
-                >
-                  <i class="pi pi-filter-slash"></i>
-                </button>
+                  severity="secondary"
+                  [rounded]="true"
+                  [text]="true"
+                ></button>
               }
             </div>
           </div>
 
-          <div class="mt-5 rounded-[1.4rem] bg-slate-50 px-4 py-4">
-            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-slate-400">Selected location</p>
-            <p class="mt-2 text-sm font-medium text-slate-950">{{ shopperLocationLabel() }}</p>
+          <div class="mt-5 rounded-md bg-neutral-50 px-4 py-4">
+            <p class="text-xs font-semibold uppercase tracking-[0.22em] text-neutral-400">Selected location</p>
+            <p class="mt-2 text-sm font-medium text-neutral-950">{{ shopperLocationLabel() }}</p>
           </div>
 
           @if (availabilityLoading()) {
-            <div class="mt-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+            <div class="mt-5 rounded-md border border-neutral-200 bg-neutral-50 px-4 py-5 text-sm text-neutral-500">
               Checking store availability for this variant.
             </div>
           } @else if (availabilityError()) {
-            <div class="mt-5 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-4 py-5 text-sm text-amber-900">
+            <div class="mt-5 rounded-md border border-stone-200 bg-stone-50 px-4 py-5 text-sm text-stone-900">
               {{ availabilityError() }}
             </div>
           } @else if (nearestStore(); as store) {
             <div class="mt-5 grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-              <article class="rounded-[1.7rem] border border-emerald-200 bg-emerald-50 p-5">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-700">Nearest available store</p>
-                <h3 class="mt-3 text-xl font-semibold text-slate-950">{{ store.storeName }}</h3>
-                <p class="mt-2 text-sm text-slate-600">{{ store.city }}, {{ store.state }} | {{ store.postalCode }}</p>
-                <p class="mt-4 text-sm font-medium text-slate-950">
+              <article class="rounded-md border border-neutral-200 bg-neutral-50 p-5">
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-neutral-700">Nearest available store</p>
+                <h3 class="mt-3 text-xl font-semibold text-neutral-950">{{ store.storeName }}</h3>
+                <p class="mt-2 text-sm text-neutral-600">{{ store.city }}, {{ store.state }} | {{ store.postalCode }}</p>
+                <p class="mt-4 text-sm font-medium text-neutral-950">
                   {{ store.canFulfill ? 'In stock at this store.' : 'Availability is limited at this store.' }}
                 </p>
-                <p class="mt-2 text-sm text-slate-500">
+                <p class="mt-2 text-sm text-neutral-500">
                   {{ store.availableQuantity }} unit{{ store.availableQuantity === 1 ? '' : 's' }} available
                   @if (store.distanceKilometers !== null) {
-                    <span class="text-slate-300">|</span>
+                    <span class="text-neutral-300">|</span>
                     {{ formatDistance(store.distanceKilometers) }}
                   }
                 </p>
@@ -255,18 +275,18 @@
 
               <div class="space-y-3">
                 @for (availabilityItem of availability(); track availabilityItem.storeId) {
-                  <article class="rounded-[1.5rem] border border-slate-200 bg-white p-4">
+                  <article class="rounded-md border border-neutral-200 bg-white p-4">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                       <div>
-                        <p class="text-sm font-semibold text-slate-950">{{ availabilityItem.storeName }}</p>
-                        <p class="mt-1 text-sm text-slate-500">{{ availabilityItem.city }}, {{ availabilityItem.state }}</p>
+                        <p class="text-sm font-semibold text-neutral-950">{{ availabilityItem.storeName }}</p>
+                        <p class="mt-1 text-sm text-neutral-500">{{ availabilityItem.city }}, {{ availabilityItem.state }}</p>
                       </div>
 
                       <div class="text-left sm:text-right">
-                        <p class="text-sm font-medium" [class.text-emerald-700]="availabilityItem.canFulfill" [class.text-amber-700]="!availabilityItem.canFulfill">
+                        <p class="text-sm font-medium" [class.text-neutral-700]="availabilityItem.canFulfill" [class.text-stone-700]="!availabilityItem.canFulfill">
                           {{ availabilityItem.availableQuantity }} available
                         </p>
-                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">
+                        <p class="mt-1 text-xs uppercase tracking-[0.2em] text-neutral-400">
                           {{ formatDistance(availabilityItem.distanceKilometers) }}
                         </p>
                       </div>
@@ -276,7 +296,7 @@
               </div>
             </div>
           } @else {
-            <div class="mt-5 rounded-[1.5rem] border border-dashed border-slate-300 bg-slate-50 px-4 py-5 text-sm text-slate-500">
+            <div class="mt-5 rounded-md border border-dashed border-neutral-300 bg-neutral-50 px-4 py-5 text-sm text-neutral-500">
               No store availability records are available for this product yet.
             </div>
           }
@@ -399,6 +419,7 @@
 
           <div class="enma-composer__surface">
             <textarea
+              pTextarea
               id="enma-prompt"
               rows="3"
               [value]="enmaPrompt()"
@@ -416,28 +437,33 @@
               <div class="enma-actions">
                 @if (enmaStreaming()) {
                   <button
+                    pButton
                     type="button"
+                    icon="pi pi-stop-circle"
                     (click)="stopEnma()"
-                    class="enma-button enma-button--icon enma-button--ghost"
+                    class="enma-button"
+                    severity="warn"
+                    [outlined]="true"
+                    [rounded]="true"
                     aria-label="Stop Enma response"
                     pTooltip="Stop"
                     tooltipPosition="top"
-                  >
-                    <i class="pi pi-stop-circle"></i>
-                  </button>
+                  ></button>
                 }
 
                 <button
+                  pButton
                   type="button"
+                  icon="pi pi-arrow-up"
                   (click)="askEnma()"
                   [disabled]="!canAskEnma()"
-                  class="enma-button enma-button--icon enma-button--primary"
+                  class="enma-button"
+                  severity="contrast"
+                  [rounded]="true"
                   aria-label="Send message to Enma"
                   pTooltip="Send"
                   tooltipPosition="top"
-                >
-                  <i class="pi pi-arrow-up"></i>
-                </button>
+                ></button>
               </div>
             </div>
           </div>
@@ -448,26 +474,28 @@
     @if (relatedProducts().length > 0) {
       <section class="space-y-4">
         <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Keep browsing</p>
-          <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">More in {{ product.categoryName }}</h2>
+          <p class="text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">Keep browsing</p>
+          <h2 class="mt-2 text-2xl font-semibold tracking-tight text-neutral-950">More in {{ product.categoryName }}</h2>
         </div>
 
         <div class="grid gap-5 md:grid-cols-3">
           @for (relatedProduct of relatedProducts(); track relatedProduct.id) {
-            <article class="overflow-hidden rounded-[1.9rem] border border-slate-200 bg-white/92 p-4 shadow-[0_18px_55px_rgba(15,23,42,0.05)]">
-              <a [routerLink]="['/products', relatedProduct.slug]" class="block overflow-hidden rounded-[1.5rem]">
-                <img
-                  [src]="relatedProduct.imageUrl"
-                  [alt]="relatedProduct.name"
-                  class="aspect-square w-full rounded-[1.5rem] object-cover transition duration-500 hover:scale-[1.02]"
-                />
+            <article class="overflow-hidden rounded-lg border border-neutral-200 bg-white/92 p-4 shadow-[0_18px_55px_rgba(15,23,42,0.05)]">
+              <a [routerLink]="['/products', relatedProduct.slug]" class="block overflow-hidden rounded-md">
+                <div class="grid aspect-square place-items-center overflow-hidden rounded-md text-white/90" [style.background]="getProductVisualBackground(relatedProduct.imageUrl)">
+                  @if (canRenderImageUrl(relatedProduct.imageUrl)) {
+                    <img [src]="relatedProduct.imageUrl" [alt]="relatedProduct.name" class="h-full w-full object-cover" />
+                  } @else {
+                    <span class="text-[clamp(3rem,10vw,7rem)] font-extrabold opacity-80">{{ relatedProduct.name.charAt(0) }}</span>
+                  }
+                </div>
               </a>
 
-              <p class="mt-4 text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">{{ relatedProduct.categoryName }}</p>
-              <a [routerLink]="['/products', relatedProduct.slug]" class="mt-2 block text-lg font-semibold text-slate-950 transition hover:text-emerald-800">
+              <p class="mt-4 text-xs font-semibold uppercase tracking-[0.28em] text-neutral-400">{{ relatedProduct.categoryName }}</p>
+              <a [routerLink]="['/products', relatedProduct.slug]" class="mt-2 block text-lg font-semibold text-neutral-950 transition hover:text-neutral-800">
                 {{ relatedProduct.name }}
               </a>
-              <p class="mt-2 text-sm leading-6 text-slate-500">{{ relatedProduct.description }}</p>
+              <p class="mt-2 text-sm leading-6 text-neutral-500">{{ relatedProduct.description }}</p>
             </article>
           }
         </div>

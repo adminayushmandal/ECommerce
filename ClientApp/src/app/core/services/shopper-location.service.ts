@@ -1,8 +1,28 @@
 import { Injectable, computed, signal } from '@angular/core';
 
-import { ShopperLocation } from '../models/store.models';
+import { DemoLocationKey, ShopperLocation } from '../models/store.models';
 
 const storageKey = 'ecommerce.shopper-location';
+const demoLocations: Record<DemoLocationKey, ShopperLocation> = {
+  ludhiana: {
+    latitude: 30.900965,
+    longitude: 75.857275,
+    label: 'Ludhiana store demo',
+    source: 'demo',
+  },
+  dibrugarh: {
+    latitude: 27.472833,
+    longitude: 94.911964,
+    label: 'Dibrugarh store demo',
+    source: 'demo',
+  },
+  shillong: {
+    latitude: 25.578773,
+    longitude: 91.893254,
+    label: 'Shillong store demo',
+    source: 'demo',
+  },
+};
 
 @Injectable({ providedIn: 'root' })
 export class ShopperLocationService {
@@ -39,12 +59,11 @@ export class ShopperLocationService {
   }
 
   useLudhianaDemoLocation(): void {
-    this.setLocation({
-      latitude: 30.900965,
-      longitude: 75.857275,
-      label: 'Ludhiana demo location',
-      source: 'demo',
-    });
+    this.useDemoLocation('ludhiana');
+  }
+
+  useDemoLocation(location: DemoLocationKey): void {
+    this.setLocation(demoLocations[location]);
   }
 
   clear(): void {

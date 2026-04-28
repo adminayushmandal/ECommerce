@@ -5,6 +5,7 @@ using Application.Features.ProductVariants.Commands;
 using Application.Features.ProductVariants.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Shared.Constants;
 
 namespace ECommerce.Server.Endpoints;
 
@@ -23,6 +24,7 @@ public sealed class Products : EndpointGroupBase
             .Produces<ProductDto>();
 
         groupBuilder.MapPost(CreateProduct)
+            .RequireAuthorization(Contracts.Products.Create)
             .WithSummary("Create product")
             .WithDescription("Creates a new product in the catalog.")
             .Produces<ProductDto>(StatusCodes.Status201Created)
@@ -31,6 +33,7 @@ public sealed class Products : EndpointGroupBase
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         groupBuilder.MapPut(UpdateProduct, "{id}")
+            .RequireAuthorization(Contracts.Products.Update)
             .WithSummary("Update product")
             .WithDescription("Updates an existing product in the catalog.")
             .Produces<ProductDto>()
@@ -39,6 +42,7 @@ public sealed class Products : EndpointGroupBase
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         groupBuilder.MapDelete(DeleteProduct, "{id}")
+            .RequireAuthorization(Contracts.Products.Delete)
             .WithSummary("Delete product")
             .WithDescription("Deletes an existing product and its variants.")
             .Produces(StatusCodes.Status204NoContent)
@@ -57,6 +61,7 @@ public sealed class Products : EndpointGroupBase
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         groupBuilder.MapPost(CreateProductVariant, "{productId}/variants")
+            .RequireAuthorization(Contracts.ProductVariants.Create)
             .WithSummary("Create product variant")
             .WithDescription("Creates a variant under an existing product.")
             .Produces<ProductVariantDto>(StatusCodes.Status201Created)
@@ -65,6 +70,7 @@ public sealed class Products : EndpointGroupBase
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         groupBuilder.MapPut(UpdateProductVariant, "{productId}/variants/{variantId}")
+            .RequireAuthorization(Contracts.ProductVariants.Update)
             .WithSummary("Update product variant")
             .WithDescription("Updates an existing product variant.")
             .Produces<ProductVariantDto>()
@@ -73,6 +79,7 @@ public sealed class Products : EndpointGroupBase
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         groupBuilder.MapDelete(DeleteProductVariant, "{productId}/variants/{variantId}")
+            .RequireAuthorization(Contracts.ProductVariants.Delete)
             .WithSummary("Delete product variant")
             .WithDescription("Deletes a product variant from an existing product.")
             .Produces(StatusCodes.Status204NoContent)

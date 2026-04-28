@@ -1,345 +1,559 @@
-<section class="space-y-8">
-  @if (locationPromptOpen()) {
-    <section class="rounded-[2.25rem] border border-emerald-200 bg-[linear-gradient(135deg,#052e16_0%,#14532d_55%,#0f766e_115%)] px-6 py-7 text-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
-      <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-        <div>
-          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-white/70">Location-first storefront</p>
-          <h1 class="mt-3 text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-            Set your location to load the nearest store before you start browsing.
-          </h1>
-          <p class="mt-4 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
-            This storefront now supports an Instamart-style flow. We resolve the nearest store first, then display the products that store can actually fulfill.
-          </p>
-        </div>
+<section class="storefront">
+  <section class="fashion-hero" aria-labelledby="collection-title">
+    <div class="fashion-hero__menu" aria-label="Featured departments">
+      <span>MEN</span>
+      <span>WOMEN</span>
+      <span>KIDS</span>
+    </div>
 
-        <div class="flex flex-wrap gap-3 sm:min-w-[18rem] sm:justify-end">
-          <button
-            type="button"
-            (click)="useBrowserLocation()"
-            aria-label="Use my current location"
-            pTooltip="Use my current location"
-            tooltipPosition="top"
-            class="icon-action-button bg-white text-slate-950 hover:bg-emerald-50"
-          >
-            <i class="pi pi-map-marker"></i>
-          </button>
-          <button
-            type="button"
-            (click)="browseAllProducts()"
-            aria-label="Browse all products"
-            pTooltip="Browse all products"
-            tooltipPosition="top"
-            class="icon-action-button border border-white/20 bg-transparent text-white/80 hover:bg-white/10 hover:text-white"
-          >
-            <i class="pi pi-map"></i>
-          </button>
-        </div>
+    <div class="fashion-hero__copy">
+      <p class="ui-eyebrow">Omnichannel clothing</p>
+      <h1 id="collection-title">New Collection</h1>
+      <p>
+        Men, women, and kids clothing with size-color variants, store-aware stock, and checkout-ready fulfillment from
+        {{ storeNetworkLabel() }}.
+      </p>
+
+      <div class="fashion-hero__actions">
+        <a pButton href="#catalog" label="Go To Shop" icon="pi pi-arrow-right" iconPos="right" severity="contrast"></a>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-map-marker"
+          label="Use location"
+          severity="secondary"
+          [outlined]="true"
+          (click)="useBrowserLocation()"
+        ></button>
+      </div>
+    </div>
+
+    <div class="fashion-hero__gallery" aria-label="Featured products">
+      @if (featuredProducts().length > 0) {
+        @for (product of featuredProducts().slice(0, 2); track product.id) {
+          <a [routerLink]="['/products', product.slug]" class="hero-product">
+            <div class="hero-product__visual" [style.background]="getProductVisualBackground(product)">
+              @if (canRenderImageUrl(product.imageUrl)) {
+                <img [src]="product.imageUrl" [alt]="product.name" />
+              } @else {
+                <span>{{ product.name.charAt(0) }}</span>
+              }
+            </div>
+          </a>
+        }
+      } @else {
+        @for (placeholder of [1, 2]; track placeholder) {
+          <div class="hero-product hero-product--loading">
+            <p-skeleton width="100%" height="15rem"></p-skeleton>
+            <p-skeleton width="70%" height="1rem"></p-skeleton>
+          </div>
+        }
+      }
+    </div>
+  </section>
+
+  @if (locationPromptOpen()) {
+    <section class="location-banner">
+      <div>
+        <p class="ui-eyebrow">Location-first stock</p>
+        <h2>Choose the closest store before checkout.</h2>
+        <p>Resolve local availability for Ludhiana, Dibrugarh, or Shillong, or keep browsing the full collection.</p>
+      </div>
+
+      <div class="location-banner__actions">
+        <button pButton type="button" icon="pi pi-map-marker" label="Use my location" (click)="useBrowserLocation()"></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-map"
+          label="Ludhiana"
+          severity="secondary"
+          [outlined]="true"
+          (click)="useDemoLocation('ludhiana')"
+        ></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-map"
+          label="Dibrugarh"
+          severity="secondary"
+          [outlined]="true"
+          (click)="useDemoLocation('dibrugarh')"
+        ></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-map"
+          label="Shillong"
+          severity="secondary"
+          [outlined]="true"
+          (click)="useDemoLocation('shillong')"
+        ></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-compass"
+          label="Browse all"
+          severity="secondary"
+          [outlined]="true"
+          (click)="browseAllProducts()"
+        ></button>
       </div>
     </section>
   }
 
-  <div class="space-y-8">
-    <section class="overflow-hidden rounded-[2.25rem] border border-white/80 bg-[linear-gradient(135deg,#0f172a_0%,#134e4a_52%,#fb923c_140%)] px-6 py-7 text-white shadow-[0_30px_80px_rgba(15,23,42,0.18)] sm:px-8 sm:py-8">
-      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-end">
-        <div class="space-y-6">
-          <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.32em] text-white/80">
-            @if (resolvedStore(); as store) {
-              {{ store.name }} storefront
-            } @else {
-              Flexible storefront
-            }
-          </div>
+  <section class="store-context-grid">
+    <article class="context-card">
+      <span>Store context</span>
+      <strong>{{ resolvedStore()?.name ?? 'All products' }}</strong>
+      <p>
+        @if (resolvedStore(); as store) {
+          {{ store.city }}, {{ store.state }} - {{ formatDistance(store.distanceKilometers) }}
+        } @else {
+          Store-specific filtering is not active right now.
+        }
+      </p>
+    </article>
 
-          <div class="space-y-4">
-            <h1 class="max-w-3xl text-4xl font-semibold tracking-tight text-white sm:text-5xl">
-              Browse the nearest store first, then move into secure checkout when you are ready.
-            </h1>
-            <p class="max-w-2xl text-sm leading-7 text-white/78 sm:text-base">
-              The storefront can now resolve the closest store from shopper location, scope the catalog to that store, and keep the route into account-based checkout intact.
-            </p>
-          </div>
+    <article class="context-card">
+      <span>Visible catalog</span>
+      <strong>{{ filteredProducts().length }}</strong>
+      <p>Results update across product names, descriptions, categories, and variants.</p>
+    </article>
 
-          <div class="grid gap-4 rounded-[1.8rem] border border-white/12 bg-white/10 p-4 backdrop-blur md:grid-cols-[minmax(0,1fr)_auto] md:items-center">
-            <label class="flex items-center gap-3 rounded-[1.3rem] bg-white/96 px-4 py-4 text-slate-950 shadow-[0_18px_40px_rgba(15,23,42,0.12)]">
-              <i class="pi pi-search text-slate-400"></i>
-              <input
-                type="search"
-                [value]="searchTerm()"
-                (input)="onSearchInput($event)"
-                placeholder="Search products, categories, or variants"
-                class="w-full border-0 bg-transparent text-sm outline-none placeholder:text-slate-400"
-              />
-            </label>
+    <article class="context-card">
+      <span>Store network</span>
+      <strong>{{ storeLocations().length || 3 }}</strong>
+      <p>{{ storeNetworkLabel() }} carry clothing variants for omnichannel fulfillment.</p>
+    </article>
 
-            <a
-              href="#catalog"
-              aria-label="Explore catalog"
-              pTooltip="Explore catalog"
-              tooltipPosition="top"
-              class="icon-action-button h-12 w-12 bg-white text-slate-950 hover:bg-emerald-50"
-            >
-              <i class="pi pi-arrow-right"></i>
-            </a>
-          </div>
-        </div>
-
-        <div class="grid gap-3">
-          @for (collection of curatedCollections(); track collection.title) {
-            <article class="rounded-[1.6rem] border border-white/10 bg-white/10 p-4 backdrop-blur">
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-white/60">{{ collection.value }}</p>
-              <h2 class="mt-3 text-lg font-semibold text-white">{{ collection.title }}</h2>
-              <p class="mt-2 text-sm leading-6 text-white/72">{{ collection.description }}</p>
-            </article>
-          }
-        </div>
+    <article class="context-card context-card--actions">
+      <span>Shopper location</span>
+      <strong>{{ shopperLocationState()?.label ?? 'Not set' }}</strong>
+      <div>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-refresh"
+          severity="secondary"
+          [rounded]="true"
+          [outlined]="true"
+          aria-label="Update location"
+          pTooltip="Update location"
+          tooltipPosition="top"
+          (click)="useBrowserLocation()"
+        ></button>
+        <button
+          pButton
+          type="button"
+          icon="pi pi-compass"
+          severity="secondary"
+          [rounded]="true"
+          [text]="true"
+          aria-label="Change location mode"
+          pTooltip="Change location mode"
+          tooltipPosition="top"
+          (click)="askForLocationAgain()"
+        ></button>
       </div>
-    </section>
+    </article>
+  </section>
 
-    <section class="grid gap-4 md:grid-cols-3">
-      <article class="rounded-[1.9rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Store context</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-950">
-          {{ resolvedStore()?.name ?? 'All products' }}
-        </p>
-        <p class="mt-2 text-sm leading-6 text-slate-500">
-          @if (resolvedStore(); as store) {
-            {{ store.city }}, {{ store.state }} · {{ formatDistance(store.distanceKilometers) }}
-          } @else {
-            Store-specific filtering is not active right now.
-          }
-        </p>
-      </article>
-
-      <article class="rounded-[1.9rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Visible catalog</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-950">{{ filteredProducts().length }}</p>
-        <p class="mt-2 text-sm leading-6 text-slate-500">Results update instantly as users search across names, descriptions, categories, and variants.</p>
-      </article>
-
-      <article class="rounded-[1.9rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Shopper location</p>
-        <p class="mt-3 text-3xl font-semibold text-slate-950">{{ shopperLocationState()?.label ?? 'Not set' }}</p>
-        <div class="mt-3 flex flex-wrap gap-2">
-          <button
-            type="button"
-            (click)="useBrowserLocation()"
-            aria-label="Update location"
-            pTooltip="Update location"
-            tooltipPosition="top"
-            class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-          >
-            <i class="pi pi-refresh"></i>
-          </button>
-          <button
-            type="button"
-            (click)="askForLocationAgain()"
-            aria-label="Change location mode"
-            pTooltip="Change location mode"
-            tooltipPosition="top"
-            class="icon-action-button border border-slate-200 bg-white text-slate-500 hover:border-slate-300 hover:text-slate-900"
-          >
-            <i class="pi pi-compass"></i>
-          </button>
-        </div>
-      </article>
-    </section>
-
-    <section id="catalog" class="space-y-5">
-      <div class="flex flex-col gap-4 rounded-[1.9rem] border border-slate-200 bg-white/88 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-        <div class="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
-          <div>
-            <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Product gallery</p>
-            <h2 class="mt-2 text-2xl font-semibold tracking-tight text-slate-950">
-              @if (resolvedStore(); as store) {
-                Available from {{ store.name }}
-              } @else {
-                Browse by category or keyword
-              }
-            </h2>
-            <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
-              @if (resolvedStore()) {
-                The catalog is scoped to the nearest store so customers only see products that local inventory can fulfill.
-              } @else {
-                The catalog keeps the layout readable on desktop and mobile, with strong spacing, clear pricing, and obvious actions.
-              }
-            </p>
+  <section id="catalog" class="catalog-section">
+    <ng-template #catalogFiltersContent>
+      <header>
+        <div class="catalog-filters__title-row">
+          <h2>Filters</h2>
+          <div class="filter-title-actions">
+            @if (hasActiveFilters()) {
+              <button type="button" class="filter-clear-button" (click)="clearFilters()">Clear {{ activeFilterCount() }}</button>
+            }
+            <button type="button" class="mobile-filter-close-button" aria-label="Close filters" (click)="closeMobileFilters()">
+              <i class="pi pi-times"></i>
+            </button>
           </div>
-
-          <button
-            type="button"
-            aria-label="Refresh products"
-            pTooltip="Refresh products"
-            tooltipPosition="top"
-            class="icon-action-button self-start border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-            (click)="refreshProducts()"
-          >
-            <i class="pi pi-refresh"></i>
-          </button>
         </div>
+      </header>
 
-        <div class="flex flex-wrap gap-3">
-          @for (category of categories(); track category) {
+      <div class="filter-group">
+        <div class="filter-group__heading">
+          <span>Size</span>
+          <i class="pi pi-angle-down"></i>
+        </div>
+        <div class="size-grid" aria-label="Size options">
+          @for (size of sizeOptions(); track size) {
             <button
               type="button"
-              (click)="setCategory(category)"
-              class="rounded-full px-4 py-2 text-sm font-medium transition"
-              [class.bg-slate-950]="selectedCategory() === category"
-              [class.text-white]="selectedCategory() === category"
-              [class.shadow-[0_16px_32px_rgba(15,23,42,0.14)]]="selectedCategory() === category"
-              [class.border]="selectedCategory() !== category"
-              [class.border-slate-200]="selectedCategory() !== category"
-              [class.bg-white]="selectedCategory() !== category"
-              [class.text-slate-600]="selectedCategory() !== category"
-              [class.hover:border-slate-300]="selectedCategory() !== category"
-              [class.hover:bg-slate-50]="selectedCategory() !== category"
+              [class.size-grid__item--active]="isSizeSelected(size)"
+              [attr.aria-pressed]="isSizeSelected(size)"
+              (click)="toggleSize(size)"
             >
-              {{ category }}
+              {{ size }}
             </button>
           }
         </div>
       </div>
 
+      <div class="filter-group">
+        <div class="filter-group__heading">
+          <span>Availability</span>
+          <i class="pi pi-angle-down"></i>
+        </div>
+        <label class="filter-check">
+          <input
+            type="checkbox"
+            [checked]="availabilityMode() === 'in-stock'"
+            (change)="setAvailabilityMode('in-stock', $event)"
+          />
+          <span>Availability</span>
+          <strong>({{ availableProductCount() }})</strong>
+        </label>
+        <label class="filter-check">
+          <input
+            type="checkbox"
+            [checked]="availabilityMode() === 'out-of-stock'"
+            (change)="setAvailabilityMode('out-of-stock', $event)"
+          />
+          <span>Out of stock</span>
+          <strong>({{ outOfStockProductCount() }})</strong>
+        </label>
+      </div>
+
+      <div class="filter-group">
+        <div class="filter-group__heading">
+          <span>Category</span>
+          <i class="pi pi-angle-down"></i>
+        </div>
+        <div class="filter-category-list">
+          @for (category of categories(); track category) {
+            <button
+              type="button"
+              [class.filter-category-list__item--active]="selectedCategory() === category"
+              (click)="setCategory(category)"
+            >
+              <span>{{ category }}</span>
+              <i class="pi pi-angle-right"></i>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <button type="button" class="filter-row" [class.filter-row--active]="selectedColors().size > 0">
+          <span>Colors</span>
+          <i class="pi pi-angle-down"></i>
+        </button>
+        <div class="filter-token-list">
+          @for (color of colorOptions(); track color) {
+            <button
+              type="button"
+              class="filter-token"
+              [class.filter-token--active]="isColorSelected(color)"
+              [attr.aria-pressed]="isColorSelected(color)"
+              (click)="toggleColor(color)"
+            >
+              <span class="filter-token__swatch" [style.background-color]="getFilterColor(color)"></span>
+              <span>{{ color }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <button type="button" class="filter-row" [class.filter-row--active]="selectedPriceRange() !== 'All'">
+          <span>Price Range</span>
+          <i class="pi pi-angle-down"></i>
+        </button>
+        <div class="filter-token-list filter-token-list--stacked">
+          @for (range of priceRanges(); track range.label) {
+            <button
+              type="button"
+              class="filter-token"
+              [class.filter-token--active]="selectedPriceRange() === range.label"
+              [attr.aria-pressed]="selectedPriceRange() === range.label"
+              (click)="setPriceRange(range.label)"
+            >
+              <span>{{ range.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <button type="button" class="filter-row" [class.filter-row--active]="selectedFits().size > 0">
+          <span>Fit</span>
+          <i class="pi pi-angle-down"></i>
+        </button>
+        <div class="filter-token-list">
+          @for (fit of fitOptions(); track fit) {
+            <button
+              type="button"
+              class="filter-token"
+              [class.filter-token--active]="isFitSelected(fit)"
+              [attr.aria-pressed]="isFitSelected(fit)"
+              (click)="toggleFit(fit)"
+            >
+              <span>{{ fit }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <button type="button" class="filter-row" [class.filter-row--active]="selectedFabrics().size > 0">
+          <span>Fabric</span>
+          <i class="pi pi-angle-down"></i>
+        </button>
+        <div class="filter-token-list filter-token-list--stacked">
+          @for (fabric of fabricOptions(); track fabric) {
+            <button
+              type="button"
+              class="filter-token"
+              [class.filter-token--active]="isFabricSelected(fabric)"
+              [attr.aria-pressed]="isFabricSelected(fabric)"
+              (click)="toggleFabric(fabric)"
+            >
+              <span>{{ fabric }}</span>
+            </button>
+          }
+        </div>
+      </div>
+
+      <button type="button" class="filter-row filter-row--disabled" disabled>
+        <span>Ratings</span>
+        <small>Not tracked</small>
+      </button>
+    </ng-template>
+
+    <aside class="catalog-filters catalog-filters--desktop" aria-label="Product filters">
+      <ng-container [ngTemplateOutlet]="catalogFiltersContent"></ng-container>
+    </aside>
+
+    <div class="catalog-content">
+      <header class="catalog-toolbar">
+        <div>
+          <p class="catalog-breadcrumb">Home / Clothes</p>
+          <h2>Clothing</h2>
+        </div>
+
+        <div class="catalog-toolbar__actions">
+          <div class="catalog-search-shell">
+            <p-iconfield iconPosition="left" styleClass="fashion-search-field">
+              <p-inputicon styleClass="pi pi-search"></p-inputicon>
+              <input
+                pInputText
+                type="search"
+                [value]="searchTerm()"
+                (input)="onSearchInput($event)"
+                placeholder="Search"
+              />
+            </p-iconfield>
+
+            <button
+              type="button"
+              class="mobile-filter-button"
+              [class.mobile-filter-button--active]="mobileFiltersOpen() || hasActiveFilters()"
+              [attr.aria-expanded]="mobileFiltersOpen()"
+              aria-controls="mobile-catalog-filters"
+              aria-label="Open search filters"
+              (click)="toggleMobileFilters()"
+            >
+              <i class="pi pi-sliders-h"></i>
+              @if (activeFilterCount() > 0) {
+                <span>{{ activeFilterCount() }}</span>
+              }
+            </button>
+          </div>
+
+          <button
+            pButton
+            type="button"
+            icon="pi pi-refresh"
+            severity="secondary"
+            [rounded]="true"
+            [outlined]="true"
+            aria-label="Refresh products"
+            pTooltip="Refresh products"
+            tooltipPosition="top"
+            (click)="refreshProducts()"
+          ></button>
+        </div>
+      </header>
+
+      @if (mobileFiltersOpen()) {
+        <section id="mobile-catalog-filters" class="mobile-filter-surface" aria-label="Search filters">
+          <div class="catalog-filters catalog-filters--mobile">
+            <ng-container [ngTemplateOutlet]="catalogFiltersContent"></ng-container>
+          </div>
+
+          <div class="mobile-filter-actions">
+            @if (hasActiveFilters()) {
+              <button type="button" class="filter-clear-button" (click)="clearFilters()">Clear filters</button>
+            }
+            <button
+              pButton
+              type="button"
+              severity="contrast"
+              [label]="'View ' + filteredProducts().length + ' items'"
+              (click)="closeMobileFilters()"
+            ></button>
+          </div>
+        </section>
+      }
+
+      <div class="category-rail" aria-label="Product categories">
+        @for (category of categories(); track category) {
+          <button
+            type="button"
+            [class.category-rail__item--active]="selectedCategory() === category"
+            (click)="setCategory(category)"
+          >
+            <span>{{ category }}</span>
+          </button>
+        }
+      </div>
+
       @if (loading()) {
         <div class="storefront-card-grid">
           @for (placeholder of [1, 2, 3, 4, 5, 6]; track placeholder) {
-            <div class="overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-              <div class="aspect-square animate-pulse rounded-[1.6rem] bg-slate-100"></div>
-              <div class="mt-4 h-4 animate-pulse rounded-full bg-slate-100"></div>
-              <div class="mt-3 h-3 w-3/4 animate-pulse rounded-full bg-slate-100"></div>
-              <div class="mt-6 grid grid-cols-2 gap-3">
-                <div class="h-10 animate-pulse rounded-full bg-slate-100"></div>
-                <div class="h-10 animate-pulse rounded-full bg-slate-100"></div>
-              </div>
-            </div>
+            <article class="product-card product-card--loading">
+              <p-skeleton width="100%" height="18rem"></p-skeleton>
+              <p-skeleton width="45%" height="1rem"></p-skeleton>
+              <p-skeleton width="78%" height="1.4rem"></p-skeleton>
+            </article>
           }
         </div>
       } @else if (error()) {
-        <div class="rounded-[2rem] border border-red-200 bg-red-50/70 px-6 py-8">
-          <h3 class="text-lg font-semibold text-red-950">Catalog unavailable</h3>
-          <p class="mt-2 max-w-2xl text-sm leading-6 text-red-700">{{ error() }}</p>
+        <div class="feedback-state feedback-state--error">
+          <h3>Catalog unavailable</h3>
+          <p>{{ error() }}</p>
         </div>
       } @else if (filteredProducts().length === 0) {
-        <div class="rounded-[2rem] border border-dashed border-slate-300 bg-white/80 px-6 py-10 text-center">
-          <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">No results</p>
-          <h3 class="mt-3 text-xl font-semibold text-slate-950">Try another search or clear the current category filter.</h3>
-          <p class="mt-2 text-sm leading-6 text-slate-500">
-            Matching runs across product names, descriptions, categories, and variant labels.
-          </p>
+        <div class="feedback-state">
+          <p class="ui-eyebrow">No results</p>
+          <h3>Try another search or clear the current filters.</h3>
+          <p>Matching runs across product names, descriptions, categories, variants, prices, and stock status.</p>
+          @if (hasActiveFilters()) {
+            <button pButton type="button" label="Clear filters" severity="contrast" (click)="clearFilters()"></button>
+          }
         </div>
       } @else {
         <div class="storefront-card-grid">
           @for (product of filteredProducts(); track product.id) {
-            <article class="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white/92 p-4 shadow-[0_18px_55px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_24px_70px_rgba(15,23,42,0.1)]">
-              <a [routerLink]="['/products', product.slug]" class="block overflow-hidden rounded-[1.7rem]">
-                <img
-                  [src]="product.imageUrl"
-                  [alt]="product.name"
-                  class="aspect-square w-full rounded-[1.7rem] border border-slate-100 object-cover transition duration-500 group-hover:scale-[1.03]"
-                />
+            <article class="product-card">
+              <a [routerLink]="['/products', product.slug]" class="product-card__media">
+                <div class="product-card__visual" [style.background]="getProductVisualBackground(product)">
+                  @if (canRenderImageUrl(product.imageUrl)) {
+                    <img [src]="product.imageUrl" [alt]="product.name" />
+                  } @else {
+                    <span>{{ product.name.charAt(0) }}</span>
+                  }
+                </div>
+                <p-tag
+                  [value]="product.variants.length + ' options'"
+                  severity="secondary"
+                  [rounded]="true"
+                  styleClass="product-card__tag"
+                ></p-tag>
               </a>
 
-              <div class="flex flex-1 flex-col pt-5">
-                <div class="flex items-start justify-between gap-4">
-                  <div>
-                    <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">{{ product.categoryName }}</p>
-                    <a [routerLink]="['/products', product.slug]" class="mt-2 block text-xl font-semibold tracking-tight text-slate-950 transition hover:text-emerald-800">
-                      {{ product.name }}
-                    </a>
-                  </div>
-
-                  <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
-                    {{ product.variants.length }} options
-                  </span>
+              <div class="product-card__body">
+                <div class="product-card__kicker">
+                  <p>{{ product.categoryName }} | {{ getPrimaryVariantLabel(product) }}</p>
+                  <span class="product-swatch" [style.background-color]="getVariantSwatchColor(product)"></span>
                 </div>
 
-                <p class="mt-3 text-sm leading-6 text-slate-500">{{ product.description }}</p>
-
-                <div class="mt-4 rounded-[1.3rem] bg-emerald-50 px-3 py-3">
-                  <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-800">
-                    {{ product.availableStoreName ?? 'Catalog availability' }}
-                  </p>
-                  <p class="mt-1 text-sm font-medium text-emerald-950">{{ getLocalAvailability(product) }}</p>
+                <div class="product-card__title-row">
+                  <a [routerLink]="['/products', product.slug]">{{ product.name }}</a>
+                  <strong>{{ getStartingPrice(product) }}</strong>
                 </div>
 
-                <div class="mt-5 flex items-end justify-between gap-4">
-                  <div>
-                    <p class="text-xs uppercase tracking-[0.28em] text-slate-400">Starting at</p>
-                    <p class="mt-1 text-2xl font-semibold tracking-tight text-slate-950">{{ getStartingPrice(product) }}</p>
-                  </div>
+                <p class="product-card__description">{{ product.description }}</p>
 
-                  <div class="rounded-2xl bg-slate-100 px-3 py-2 text-right">
-                    <p class="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-600">Default pick</p>
-                    <p class="mt-1 text-sm font-medium text-slate-950">{{ getPrimaryVariantLabel(product) }}</p>
-                  </div>
+                <div class="product-card__availability">
+                  <i class="pi pi-map-marker"></i>
+                  <span>{{ product.availableStoreName ?? 'Catalog availability' }}</span>
+                  <strong>{{ getLocalAvailability(product) }}</strong>
                 </div>
 
-                <div class="mt-6 flex items-center justify-end gap-3">
+                <div class="product-card__actions">
                   <button
+                    pButton
                     type="button"
-                    (click)="addToCart(product)"
+                    icon="pi pi-shopping-cart"
+                    severity="secondary"
+                    [rounded]="true"
+                    [outlined]="true"
                     aria-label="Add to cart"
                     pTooltip="Add to cart"
                     tooltipPosition="top"
-                    class="icon-action-button border border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50"
-                  >
-                    <i class="pi pi-shopping-cart"></i>
-                  </button>
-
+                    (click)="addToCart(product)"
+                  ></button>
                   <button
+                    pButton
                     type="button"
-                    (click)="buyNow(product)"
+                    icon="pi pi-bolt"
+                    severity="contrast"
+                    [rounded]="true"
                     aria-label="Buy now"
                     pTooltip="Buy now"
                     tooltipPosition="top"
-                    class="icon-action-button bg-slate-950 text-white hover:bg-emerald-900"
-                  >
-                    <i class="pi pi-bolt"></i>
-                  </button>
+                    (click)="buyNow(product)"
+                  ></button>
                 </div>
               </div>
             </article>
           }
         </div>
       }
-    </section>
-  </div>
+    </div>
+  </section>
 
-  <aside class="grid gap-5 xl:grid-cols-2">
-    <section class="rounded-[2rem] border border-slate-200 bg-white/90 p-5 shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
-      <p class="text-xs font-semibold uppercase tracking-[0.32em] text-slate-400">Why this flow works</p>
-      <div class="mt-4 space-y-3">
-        <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-          <p class="text-sm font-semibold text-slate-950">Location comes first</p>
-          <p class="mt-2 text-sm leading-6 text-slate-500">The storefront can ask for location immediately and resolve the nearest store before the shopper starts browsing.</p>
-        </div>
-        <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-          <p class="text-sm font-semibold text-slate-950">Store-aware catalog</p>
-          <p class="mt-2 text-sm leading-6 text-slate-500">Product cards can now reflect local inventory instead of an abstract global catalog.</p>
-        </div>
-        <div class="rounded-[1.4rem] bg-slate-50 px-4 py-4">
-          <p class="text-sm font-semibold text-slate-950">Checkout stays aligned</p>
-          <p class="mt-2 text-sm leading-6 text-slate-500">The backend already allocates the nearest fulfillable store during checkout, so the storefront and order flow are now moving in the same direction.</p>
-        </div>
+  <aside class="service-grid">
+    <section>
+      <p class="ui-eyebrow">Shopping service</p>
+          <h3>Clothing browsing with operational stock behind it.</h3>
+      <div class="service-list">
+        <article>
+          <i class="pi pi-map-marker"></i>
+          <div>
+            <strong>Location comes first</strong>
+            <p>Resolve Ludhiana, Dibrugarh, or Shillong before the shopper starts building a bag.</p>
+          </div>
+        </article>
+        <article>
+          <i class="pi pi-tags"></i>
+          <div>
+            <strong>Store-aware catalog</strong>
+            <p>Cards surface local inventory, clothing variants, size notes, and compact price details.</p>
+          </div>
+        </article>
+        <article>
+          <i class="pi pi-wallet"></i>
+          <div>
+            <strong>Checkout stays aligned</strong>
+            <p>The guest bag hands off cleanly to secure sign-in and PayPal checkout.</p>
+          </div>
+        </article>
       </div>
     </section>
 
-    <section class="rounded-[2rem] border border-emerald-200 bg-[linear-gradient(180deg,#f0fdf4_0%,#ecfeff_100%)] p-5 shadow-[0_18px_50px_rgba(16,185,129,0.09)]">
-      <p class="text-xs font-semibold uppercase tracking-[0.32em] text-emerald-700">Checkout handoff</p>
-      <h3 class="mt-3 text-xl font-semibold tracking-tight text-slate-950">Secure sign-in stays close to the purchase moment.</h3>
-      <p class="mt-3 text-sm leading-6 text-slate-600">
-        The landing experience can now start from shopper location and still hand users into the authenticated flow when they are ready to complete checkout.
+    <section class="service-grid__accent">
+      <p class="ui-eyebrow">Checkout handoff</p>
+      <h3>Secure sign-in stays close to the purchase moment.</h3>
+      <p>
+        The landing experience can start with location and still move customers into the authenticated flow when they
+        are ready to complete checkout.
       </p>
 
       <a
+        pButton
         routerLink="/identity/login"
         [queryParams]="{ intent: 'checkout', redirectTo: '/' }"
-        aria-label="Continue to sign in"
-        pTooltip="Continue to sign in"
-        tooltipPosition="top"
-        class="icon-action-button mt-5 bg-slate-950 text-white hover:bg-emerald-900"
-      >
-        <i class="pi pi-sign-in"></i>
-      </a>
+        icon="pi pi-sign-in"
+        label="Continue to sign in"
+        severity="contrast"
+      ></a>
     </section>
   </aside>
 </section>
